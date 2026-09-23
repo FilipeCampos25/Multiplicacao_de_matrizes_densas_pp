@@ -1,0 +1,58 @@
+# Segredos e configuracoes locais
+.env
+.env.*
+!.env.example
+!.env.sample
+*.pem
+*.key
+
+# Arquivos locais do editor e do sistema
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Python e Jupyter
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.venv/
+venv/
+env/
+
+# Compilacao C/C++ e executaveis
+build/
+bin/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+*.o
+*.obj
+*.a
+*.so
+*.so.*
+*.dll
+*.dylib
+*.exe
+*.out
+*.pdb
+*.ilk
+*.gcda
+*.gcno
+*.gcov
+/codigos/**/01_matmul
+
+# Resultados gerados por execucoes e medicoes
+/resultados/*
+!/resultados/.gitkeep
+
+# Logs e arquivos temporarios
+*.log
+*.tmp
+*.temp
