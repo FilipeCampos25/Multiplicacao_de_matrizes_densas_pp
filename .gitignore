@@ -51,6 +51,10 @@ CMakeCache.txt
 # Resultados gerados por execucoes e medicoes
 /resultados/*
 !/resultados/.gitkeep
+!/resultados/*.csv
+!/resultados/*.png
+!/resultados/*.svg
+!/resultados/*_ambiente.txt
 
 # Logs e arquivos temporarios
 *.log

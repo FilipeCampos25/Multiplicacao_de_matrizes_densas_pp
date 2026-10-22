@@ -189,14 +189,19 @@ int main(int argc, char** argv) {
     double* local_c_buffer =
         local_element_count == 0 ? &unused_buffer : local_c.data();
 
+    double stage_start = MPI_Wtime();
     MPI_Scatterv(rank == 0 ? matrix_a.data() : nullptr, counts.data(),
                  displacements.data(), MPI_DOUBLE, local_a_buffer,
                  local_element_count, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    const double scatter_elapsed = MPI_Wtime() - stage_start;
 
+    stage_start = MPI_Wtime();
     MPI_Bcast(matrix_b.data(), static_cast<int>(element_count), MPI_DOUBLE, 0,
               MPI_COMM_WORLD);
+    const double broadcast_elapsed = MPI_Wtime() - stage_start;
 
     const int local_rows = local_element_count / dimension;
+    stage_start = MPI_Wtime();
     for (int i = 0; i < local_rows; ++i) {
         for (int k = 0; k < dimension; ++k) {
             const double a = local_a[static_cast<std::size_t>(i) * dimension + k];
@@ -206,14 +211,32 @@ int main(int argc, char** argv) {
             }
         }
     }
+    const double computation_elapsed = MPI_Wtime() - stage_start;
 
+    stage_start = MPI_Wtime();
     MPI_Gatherv(local_c_buffer, local_element_count, MPI_DOUBLE,
                 rank == 0 ? matrix_c.data() : nullptr, counts.data(),
                 displacements.data(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    const double gather_elapsed = MPI_Wtime() - stage_start;
 
     const double local_elapsed = MPI_Wtime() - start;
     double elapsed = 0.0;
     MPI_Reduce(&local_elapsed, &elapsed, 1, MPI_DOUBLE, MPI_MAX, 0,
+               MPI_COMM_WORLD);
+
+    // O maximo entre ranks representa o caminho critico. Tempos de coletivas
+    // tambem podem incorporar espera causada por desbalanceamento.
+    const double local_stage_times[] = {scatter_elapsed, broadcast_elapsed,
+                                        computation_elapsed, gather_elapsed};
+    double maximum_stage_times[4] = {};
+    MPI_Reduce(local_stage_times, maximum_stage_times, 4, MPI_DOUBLE, MPI_MAX,
+               0, MPI_COMM_WORLD);
+
+    int minimum_rows = 0;
+    int maximum_rows = 0;
+    MPI_Reduce(&local_rows, &minimum_rows, 1, MPI_INT, MPI_MIN, 0,
+               MPI_COMM_WORLD);
+    MPI_Reduce(&local_rows, &maximum_rows, 1, MPI_INT, MPI_MAX, 0,
                MPI_COMM_WORLD);
 
     int exit_code = EXIT_SUCCESS;
@@ -224,6 +247,13 @@ int main(int argc, char** argv) {
         }
         std::printf("N=%d  checksum=%.6f  tempo=%.6f s\n", dimension, checksum,
                     elapsed);
+        std::printf(
+            "tempos_max_s scatterv=%.9f bcast=%.9f computacao=%.9f "
+            "gatherv=%.9f total=%.9f\n",
+            maximum_stage_times[0], maximum_stage_times[1],
+            maximum_stage_times[2], maximum_stage_times[3], elapsed);
+        std::printf("carga_linhas min=%d max=%d diferenca=%d\n", minimum_rows,
+                    maximum_rows, maximum_rows - minimum_rows);
 
         if (verify) {
             double maximum_error = 0.0;
