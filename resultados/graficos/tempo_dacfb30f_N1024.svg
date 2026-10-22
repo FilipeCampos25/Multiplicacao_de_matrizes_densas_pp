@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1350" height="530" viewBox="0 0 1350 530" role="img">
+<title>Tempo | N=1024 | baseline_sequencial.csv</title>
+<rect width="100%" height="100%" fill="white"/>
+<g font-family="sans-serif" font-size="14" fill="#17212b">
+<text x="35" y="30" font-size="19">Tempo | N=1024 | baseline_sequencial.csv</text>
+<text x="35" y="65">Tempo mediano (s)</text>
+<path d="M90 440.00 H700" stroke="#dce2e8"/>
+<text x="80" y="445.00" text-anchor="end">0</text>
+<path d="M90 374.00 H700" stroke="#dce2e8"/>
+<text x="80" y="379.00" text-anchor="end">0.121</text>
+<path d="M90 308.00 H700" stroke="#dce2e8"/>
+<text x="80" y="313.00" text-anchor="end">0.243</text>
+<path d="M90 242.00 H700" stroke="#dce2e8"/>
+<text x="80" y="247.00" text-anchor="end">0.364</text>
+<path d="M90 176.00 H700" stroke="#dce2e8"/>
+<text x="80" y="181.00" text-anchor="end">0.486</text>
+<path d="M90 110.00 H700" stroke="#dce2e8"/>
+<text x="80" y="115.00" text-anchor="end">0.607</text>
+<text x="700.00" y="465" text-anchor="middle">1</text>
+<path d="M90 110 V440 H700" stroke="#17212b" fill="none"/>
+<text x="390" y="500" text-anchor="middle">Trabalhadores (threads/processos)</text>
+<polyline points="700.00,145.36" fill="none" stroke="#1764ab" stroke-width="2" stroke-dasharray="7 5"/>
+<path d="M730 105 H760" stroke="#1764ab" stroke-width="2" stroke-dasharray="7 5"/>
+<text x="770" y="110">Sequencial medido</text>
+</g></svg>

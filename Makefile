@@ -85,3 +85,15 @@ benchmark-openmp: benchmark-openmp-build
 	MATMUL_BIN_DIR="$(BIN_DIR)" python3 scripts/benchmark_openmp.py $(BENCHMARK_ARGS)
 
 .PHONY: all base openmp mpi test test-correctness benchmark-openmp-build benchmark-openmp clean
+
+# Apenas analisa dados existentes; nao executa benchmarks.
+analyze-performance:
+	python3 scripts/analisar_desempenho.py
+
+.PHONY: analyze-performance
+
+# Coleta separada da analise, com caminho novo obrigatorio em BENCHMARK_ARGS.
+collect-performance: benchmark-openmp-build mpi
+	python3 scripts/coletar_desempenho.py $(BENCHMARK_ARGS)
+
+.PHONY: collect-performance

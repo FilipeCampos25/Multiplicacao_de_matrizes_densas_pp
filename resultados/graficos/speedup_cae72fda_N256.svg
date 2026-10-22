@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1350" height="530" viewBox="0 0 1350 530" role="img">
+<title>Speedup | N=256 | issue10_desempenho.csv</title>
+<rect width="100%" height="100%" fill="white"/>
+<g font-family="sans-serif" font-size="14" fill="#17212b">
+<text x="35" y="30" font-size="19">Speedup | N=256 | issue10_desempenho.csv</text>
+<text x="35" y="65">Speedup Tseq/Tp</text>
+<path d="M90 440.00 H700" stroke="#dce2e8"/>
+<text x="80" y="445.00" text-anchor="end">0</text>
+<path d="M90 374.00 H700" stroke="#dce2e8"/>
+<text x="80" y="379.00" text-anchor="end">1.79</text>
+<path d="M90 308.00 H700" stroke="#dce2e8"/>
+<text x="80" y="313.00" text-anchor="end">3.58</text>
+<path d="M90 242.00 H700" stroke="#dce2e8"/>
+<text x="80" y="247.00" text-anchor="end">5.38</text>
+<path d="M90 176.00 H700" stroke="#dce2e8"/>
+<text x="80" y="181.00" text-anchor="end">7.17</text>
+<path d="M90 110.00 H700" stroke="#dce2e8"/>
+<text x="80" y="115.00" text-anchor="end">8.96</text>
+<text x="166.25" y="465" text-anchor="middle">1</text>
+<text x="242.50" y="465" text-anchor="middle">2</text>
+<text x="395.00" y="465" text-anchor="middle">4</text>
+<text x="700.00" y="465" text-anchor="middle">8</text>
+<path d="M90 110 V440 H700" stroke="#17212b" fill="none"/>
+<text x="390" y="500" text-anchor="middle">Trabalhadores (threads/processos)</text>
+<polyline points="166.25,400.60 242.50,371.39 395.00,366.13 700.00,354.65" fill="none" stroke="#1764ab" stroke-width="2"/>
+<circle cx="166.25" cy="400.60" r="4" fill="#1764ab"/>
+<circle cx="242.50" cy="371.39" r="4" fill="#1764ab"/>
+<circle cx="395.00" cy="366.13" r="4" fill="#1764ab"/>
+<circle cx="700.00" cy="354.65" r="4" fill="#1764ab"/>
+<path d="M730 105 H760" stroke="#1764ab" stroke-width="2"/>
+<text x="770" y="110">mpi (medido)</text>
+<polyline points="166.25,401.74 242.50,368.84 395.00,352.22 700.00,340.66" fill="none" stroke="#ce4c17" stroke-width="2"/>
+<circle cx="166.25" cy="401.74" r="4" fill="#ce4c17"/>
+<circle cx="242.50" cy="368.84" r="4" fill="#ce4c17"/>
+<circle cx="395.00" cy="352.22" r="4" fill="#ce4c17"/>
+<circle cx="700.00" cy="340.66" r="4" fill="#ce4c17"/>
+<path d="M730 130 H760" stroke="#ce4c17" stroke-width="2"/>
+<text x="770" y="135">openmp / static (medido)</text>
+<polyline points="166.25,403.17 242.50,366.34 395.00,292.68 700.00,145.36" fill="none" stroke="#22824b" stroke-width="2" stroke-dasharray="7 5"/>
+<path d="M730 155 H760" stroke="#22824b" stroke-width="2" stroke-dasharray="7 5"/>
+<text x="770" y="160">Ideal teorico S=p</text>
+</g></svg>

@@ -60,3 +60,9 @@ CMakeCache.txt
 *.log
 *.tmp
 *.temp
+
+# Artefatos reproduziveis da analise de desempenho (Issue #10)
+!/resultados/analise_manifesto.json
+!/resultados/graficos/
+/resultados/graficos/*
+!/resultados/graficos/*.svg

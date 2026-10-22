@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1350" height="530" viewBox="0 0 1350 530" role="img">
+<title>Tempo | N=1024 | issue10_desempenho.csv</title>
+<rect width="100%" height="100%" fill="white"/>
+<g font-family="sans-serif" font-size="14" fill="#17212b">
+<text x="35" y="30" font-size="19">Tempo | N=1024 | issue10_desempenho.csv</text>
+<text x="35" y="65">Tempo mediano (s)</text>
+<path d="M90 440.00 H700" stroke="#dce2e8"/>
+<text x="80" y="445.00" text-anchor="end">0</text>
+<path d="M90 374.00 H700" stroke="#dce2e8"/>
+<text x="80" y="379.00" text-anchor="end">0.234</text>
+<path d="M90 308.00 H700" stroke="#dce2e8"/>
+<text x="80" y="313.00" text-anchor="end">0.468</text>
+<path d="M90 242.00 H700" stroke="#dce2e8"/>
+<text x="80" y="247.00" text-anchor="end">0.701</text>
+<path d="M90 176.00 H700" stroke="#dce2e8"/>
+<text x="80" y="181.00" text-anchor="end">0.935</text>
+<path d="M90 110.00 H700" stroke="#dce2e8"/>
+<text x="80" y="115.00" text-anchor="end">1.17</text>
+<text x="166.25" y="465" text-anchor="middle">1</text>
+<text x="242.50" y="465" text-anchor="middle">2</text>
+<text x="395.00" y="465" text-anchor="middle">4</text>
+<text x="700.00" y="465" text-anchor="middle">8</text>
+<path d="M90 110 V440 H700" stroke="#17212b" fill="none"/>
+<text x="390" y="500" text-anchor="middle">Trabalhadores (threads/processos)</text>
+<polyline points="166.25,170.93 242.50,272.36 395.00,295.08 700.00,255.90" fill="none" stroke="#1764ab" stroke-width="2"/>
+<circle cx="166.25" cy="170.93" r="4" fill="#1764ab"/>
+<circle cx="242.50" cy="272.36" r="4" fill="#1764ab"/>
+<circle cx="395.00" cy="295.08" r="4" fill="#1764ab"/>
+<circle cx="700.00" cy="255.90" r="4" fill="#1764ab"/>
+<path d="M730 105 H760" stroke="#1764ab" stroke-width="2"/>
+<text x="770" y="110">mpi (medido)</text>
+<polyline points="166.25,182.43 242.50,292.50 395.00,348.84 700.00,362.56" fill="none" stroke="#ce4c17" stroke-width="2"/>
+<circle cx="166.25" cy="182.43" r="4" fill="#ce4c17"/>
+<circle cx="242.50" cy="292.50" r="4" fill="#ce4c17"/>
+<circle cx="395.00" cy="348.84" r="4" fill="#ce4c17"/>
+<circle cx="700.00" cy="362.56" r="4" fill="#ce4c17"/>
+<path d="M730 130 H760" stroke="#ce4c17" stroke-width="2"/>
+<text x="770" y="135">openmp / static (medido)</text>
+<polyline points="166.25,145.36 242.50,145.36 395.00,145.36 700.00,145.36" fill="none" stroke="#22824b" stroke-width="2" stroke-dasharray="7 5"/>
+<path d="M730 155 H760" stroke="#22824b" stroke-width="2" stroke-dasharray="7 5"/>
+<text x="770" y="160">Sequencial medido</text>
+</g></svg>
