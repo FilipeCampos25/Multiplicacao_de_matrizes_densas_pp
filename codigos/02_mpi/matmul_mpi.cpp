@@ -224,8 +224,8 @@ int main(int argc, char** argv) {
     MPI_Reduce(&local_elapsed, &elapsed, 1, MPI_DOUBLE, MPI_MAX, 0,
                MPI_COMM_WORLD);
 
-    // O maximo entre ranks representa o caminho critico de cada etapa. Os
-    // tempos das coletivas podem incluir espera causada por desbalanceamento.
+    // O maximo entre ranks representa o caminho critico. Tempos de coletivas
+    // tambem podem incorporar espera causada por desbalanceamento.
     const double local_stage_times[] = {scatter_elapsed, broadcast_elapsed,
                                         computation_elapsed, gather_elapsed};
     double maximum_stage_times[4] = {};

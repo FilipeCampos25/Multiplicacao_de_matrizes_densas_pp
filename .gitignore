@@ -51,8 +51,10 @@ CMakeCache.txt
 # Resultados gerados por execucoes e medicoes
 /resultados/*
 !/resultados/.gitkeep
-!/resultados/mpi_escalabilidade.csv
-!/resultados/mpi_escalabilidade_ambiente.txt
+!/resultados/*.csv
+!/resultados/*.png
+!/resultados/*.svg
+!/resultados/*_ambiente.txt
 
 # Logs e arquivos temporarios
 *.log
