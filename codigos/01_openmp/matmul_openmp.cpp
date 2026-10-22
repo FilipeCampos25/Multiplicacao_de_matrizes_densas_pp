@@ -125,6 +125,14 @@ int main(int argc, char** argv) {
     std::printf("N=%d  checksum=%.6f  tempo=%.6f s  threads=%d\n", dimension,
                 checksum, elapsed, thread_count);
 
+    // Exportacao opcional para testes, em row-major e fora da medicao.
+    const char* dump = std::getenv("MATMUL_DUMP");
+    if (dump != nullptr && std::strcmp(dump, "1") == 0) {
+        std::printf("C=");
+        for (double value : matrix_c) std::printf(" %.17g", value);
+        std::printf("\n");
+    }
+
     if (verify) {
         double maximum_error = 0.0;
         const bool correct = verify_result(matrix_c, dimension, maximum_error);

@@ -255,6 +255,14 @@ int main(int argc, char** argv) {
         std::printf("carga_linhas min=%d max=%d diferenca=%d\n", minimum_rows,
                     maximum_rows, maximum_rows - minimum_rows);
 
+        // Apenas o rank 0 exporta C global, ja ordenada pelo MPI_Gatherv.
+        const char* dump = std::getenv("MATMUL_DUMP");
+        if (dump != nullptr && std::strcmp(dump, "1") == 0) {
+            std::printf("C=");
+            for (double value : matrix_c) std::printf(" %.17g", value);
+            std::printf("\n");
+        }
+
         if (verify) {
             double maximum_error = 0.0;
             const bool result_is_correct =
