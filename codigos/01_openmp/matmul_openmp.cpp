@@ -21,6 +21,11 @@
 #include <stdexcept>
 #include <vector>
 
+// Variantes de benchmark usam a mesma fonte; a compilacao normal segue static.
+#ifndef MATMUL_BENCH_SCHEDULE
+#define MATMUL_BENCH_SCHEDULE static
+#endif
+
 namespace {
 
 bool parse_dimension(const char* text, int& dimension) {
@@ -107,7 +112,7 @@ int main(int argc, char** argv) {
 #pragma omp single
         thread_count = omp_get_num_threads();
 
-#pragma omp for schedule(static)
+#pragma omp for schedule(MATMUL_BENCH_SCHEDULE)
         for (int i = 0; i < dimension; ++i) {
             for (int k = 0; k < dimension; ++k) {
                 const double a = matrix_a[static_cast<std::size_t>(i) * dimension + k];

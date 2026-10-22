@@ -1,0 +1,150 @@
+{
+  "started_utc": "2026-10-22T01:59:38.712881+00:00",
+  "arguments": {
+    "sizes": [
+      256,
+      512,
+      1024,
+      2048
+    ],
+    "threads": [
+      1,
+      2,
+      4,
+      8
+    ],
+    "repetitions": 5,
+    "schedules": [
+      "static",
+      "dynamic",
+      "guided"
+    ],
+    "output": "/lab/resultados/openmp_desempenho.csv",
+    "timeout": 120,
+    "seed": 8506
+  },
+  "resources_before": {
+    "affinity": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "cpus_after_cpuset": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "quota_cpu_equivalents": [],
+    "cpu_capacity": 12,
+    "memory_available_bytes": 7211327488,
+    "meminfo_available_bytes": 7211327488,
+    "cgroups": {
+      "/sys/fs/cgroup": {
+        "cpu.max": "max 100000",
+        "cpuset.cpus.effective": "0-11",
+        "cpuset.cpus": "",
+        "memory.max": "max",
+        "memory.current": "12648448"
+      }
+    }
+  },
+  "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo",
+  "openmp_environment": {
+    "LC_ALL": "C",
+    "OMP_DYNAMIC": "FALSE",
+    "OMP_PROC_BIND": "close",
+    "OMP_PLACES": "threads",
+    "OMP_WAIT_POLICY": "PASSIVE",
+    "OMP_THREAD_LIMIT": "8"
+  },
+  "baseline_checksums": {
+    "256": 4109165.296,
+    "512": 32883431.310401,
+    "1024": 263088437.159955,
+    "2048": 2104745207.318985
+  },
+  "status": "PASS",
+  "variant_preflight_cases": 12,
+  "git_revision": "git indisponivel; ver hashes dos artefatos",
+  "lscpu": "Architecture:                         x86_64\nCPU op-mode(s):                       32-bit, 64-bit\nAddress sizes:                        39 bits physical, 48 bits virtual\nByte Order:                           Little Endian\nCPU(s):                               12\nOn-line CPU(s) list:                  0-11\nVendor ID:                            GenuineIntel\nModel name:                           13th Gen Intel(R) Core(TM) i5-1334U\nCPU family:                           6\nModel:                                186\nThread(s) per core:                   2\nCore(s) per socket:                   6\nSocket(s):                            1\nStepping:                             3\nBogoMIPS:                             4991.99\nFlags:                                fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology tsc_reliable nonstop_tsc cpuid tsc_known_freq pni pclmulqdq vmx ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm 3dnowprefetch ssbd ibrs ibpb stibp ibrs_enhanced tpr_shadow ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves avx_vnni vnmi umip waitpkg gfni vaes vpclmulqdq rdpid movdiri movdir64b fsrm md_clear serialize flush_l1d arch_capabilities\nVirtualization:                       VT-x\nHypervisor vendor:                    Microsoft\nVirtualization type:                  full\nL1d cache:                            288 KiB (6 instances)\nL1i cache:                            192 KiB (6 instances)\nL2 cache:                             7.5 MiB (6 instances)\nL3 cache:                             12 MiB (1 instance)\nNUMA node(s):                         1\nNUMA node0 CPU(s):                    0-11\nVulnerability Gather data sampling:   Not affected\nVulnerability Itlb multihit:          Not affected\nVulnerability L1tf:                   Not affected\nVulnerability Mds:                    Not affected\nVulnerability Meltdown:               Not affected\nVulnerability Mmio stale data:        Not affected\nVulnerability Reg file data sampling: Mitigation; Clear Register File\nVulnerability Retbleed:               Mitigation; Enhanced IBRS\nVulnerability Spec rstack overflow:   Not affected\nVulnerability Spec store bypass:      Mitigation; Speculative Store Bypass disabled via prctl\nVulnerability Spectre v1:             Mitigation; usercopy/swapgs barriers and __user pointer sanitization\nVulnerability Spectre v2:             Mitigation; Enhanced / Automatic IBRS; IBPB conditional; RSB filling; PBRSB-eIBRS SW sequence; BHI BHI_DIS_S\nVulnerability Srbds:                  Not affected\nVulnerability Tsx async abort:        Not affected\n",
+  "compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+  "build_commands": {
+    "static": "g++ -O2 -std=c++17 -Wall -Wextra -Wpedantic -fopenmp -DMATMUL_BENCH_SCHEDULE=static -o bin/benchmark_openmp/matmul_static codigos/01_openmp/matmul_openmp.cpp -lm",
+    "dynamic": "g++ -O2 -std=c++17 -Wall -Wextra -Wpedantic -fopenmp -DMATMUL_BENCH_SCHEDULE=dynamic -o bin/benchmark_openmp/matmul_dynamic codigos/01_openmp/matmul_openmp.cpp -lm",
+    "guided": "g++ -O2 -std=c++17 -Wall -Wextra -Wpedantic -fopenmp -DMATMUL_BENCH_SCHEDULE=guided -o bin/benchmark_openmp/matmul_guided codigos/01_openmp/matmul_openmp.cpp -lm"
+  },
+  "sha256": {
+    "bin/base/01_matmul": "ca242a959c397962b62f9c12ce6aa0b6cc35d77b61cb1ab0f41ba7ef8134da31",
+    "bin/benchmark_openmp/matmul_static": "0a360d749ba2640889194d969b494c957d5dca698154aa38d6c7b446848d7f2b",
+    "bin/benchmark_openmp/matmul_dynamic": "e7124277693ac80f9e6f7bf8ec2bd82c7cf86df9c9c290ca7ee38ab1810227a3",
+    "bin/benchmark_openmp/matmul_guided": "853c074f5192ff303e889e4905914e994201469a291679af7cf2a8fd20c8ae27",
+    "codigos/01_openmp/matmul_openmp.cpp": "826f7285433e6423713bbd60a7cd0c52f302faca3084732d8208badde0317729",
+    "scripts/benchmark_openmp.py": "8c0039510cee3a5f50d56218fedae6e721bd56b634a64a0410f5db0dbfbf373f",
+    "Makefile": "c73988c29b00387630c1565baf782a2168b36934e2d16cdf45dee6385bb703ff"
+  },
+  "correctness": "Resumo: PASS=142 FAIL=0 SKIP=0",
+  "finished_utc": "2026-10-22T02:04:27.271907+00:00",
+  "valid_measurements": 240,
+  "resources_after": {
+    "affinity": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "cpus_after_cpuset": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "quota_cpu_equivalents": [],
+    "cpu_capacity": 12,
+    "memory_available_bytes": 7210201088,
+    "meminfo_available_bytes": 7210201088,
+    "cgroups": {
+      "/sys/fs/cgroup": {
+        "cpu.max": "max 100000",
+        "cpuset.cpus.effective": "0-11",
+        "cpuset.cpus": "",
+        "memory.max": "max",
+        "memory.current": "31952896"
+      }
+    }
+  }
+}
