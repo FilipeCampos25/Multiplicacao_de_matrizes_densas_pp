@@ -16,6 +16,8 @@ OPENMP_SRC   := $(wildcard $(OPENMP_DIR)/*.cpp)
 MPI_SRC      := $(wildcard $(MPI_DIR)/*.cpp)
 OPENMP_BIN   := $(patsubst $(OPENMP_DIR)/%.cpp,$(BIN_DIR)/openmp/%,$(OPENMP_SRC))
 MPI_BIN      := $(patsubst $(MPI_DIR)/%.cpp,$(BIN_DIR)/mpi/%,$(MPI_SRC))
+OPENMP_BENCH_BIN := $(addprefix $(BIN_DIR)/benchmark_openmp/matmul_,static dynamic guided)
+BENCHMARK_ARGS ?=
 
 AVAILABLE_TARGETS := base
 ifneq ($(strip $(OPENMP_SRC)),)
@@ -72,4 +74,14 @@ test: all
 test-correctness: all
 	MATMUL_BIN_DIR="$(BIN_DIR)" python3 tests/test_correctness.py
 
-.PHONY: all base openmp mpi test test-correctness clean
+$(BIN_DIR)/benchmark_openmp/matmul_%: $(OPENMP_DIR)/matmul_openmp.cpp Makefile
+	@mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) -fopenmp -DMATMUL_BENCH_SCHEDULE=$* -o $@ $< $(LDLIBS)
+	@printf '%s\n' '$(CXX) $(CXXFLAGS) -fopenmp -DMATMUL_BENCH_SCHEDULE=$* -o $@ $< $(LDLIBS)' > $@.build.txt
+
+benchmark-openmp-build: base openmp $(OPENMP_BENCH_BIN)
+
+benchmark-openmp: benchmark-openmp-build
+	MATMUL_BIN_DIR="$(BIN_DIR)" python3 scripts/benchmark_openmp.py $(BENCHMARK_ARGS)
+
+.PHONY: all base openmp mpi test test-correctness benchmark-openmp-build benchmark-openmp clean
