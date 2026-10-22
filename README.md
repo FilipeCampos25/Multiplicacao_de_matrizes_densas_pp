@@ -1,61 +1,57 @@
-# Multiplicação de matrizes densas — Programação Paralela
+# Ambiente de Laboratório – Programação Paralela (CCO085)
 
-Projeto acadêmico da disciplina CCO085 (IESB 2026/2) para comparar a
-multiplicação de matrizes densas sequencial, OpenMP e MPI. O ambiente Docker e
-o baseline fornecidos pelo professor foram preservados.
+**IESB 2026/2 • Prof. Rodrigo Gonçalves Pinto**
 
-## Implementações
+Este é o ambiente oficial da disciplina. Todas as medições reportadas no Projeto Acadêmico IESB devem ser feitas aqui, para que os resultados sejam comparáveis entre os trios. 
+
+O objetivo deste projeto é analisar o desempenho e a escalabilidade da multiplicação de matrizes densas, comparando um *baseline* sequencial com futuras implementações paralelas utilizando OpenMP e MPI.
 
 - Sequencial: `codigos/baselines_sequenciais_CCO085/01_matmul.cpp`;
 - OpenMP: `codigos/01_openmp/matmul_openmp.cpp`;
 - MPI: `codigos/02_mpi/matmul_mpi.cpp`.
 
-As três versões inicializam as matrizes da mesma forma, preservam a ordem de
-laços `i-k-j` e imprimem `N`, `checksum` e `tempo`.
+A estrutura inicial deste repositório foi baseada no ambiente de desenvolvimento fornecido pelo professor da disciplina CCO085 – Programação Paralela.
 
 ## Reprodução no ambiente oficial
 
-Na raiz do repositório:
+## Compilação, Execução e Benchmarks
 
+O ambiente pode ser executado localmente (utilizando `g++`) ou através do Docker / Dev Container (`docker-compose up -d`) para garantir a compatibilidade das bibliotecas e ferramentas (OpenMP e OpenMPI).
+
+**Execução Sequencial Local:**
 ```bash
-docker compose build
-docker compose run --rm pp-lab
-```
+g++ -O2 codigos/baselines_sequenciais_CCO085/01_matmul.cpp -o 01_matmul
+./01_matmul 512
 
-Dentro do contêiner, em `/lab`:
+Estado do projeto
+Fornecido pela disciplina
+Ambiente Docker e Dev Container;
 
-```bash
-make clean
-make base
-make openmp
-make mpi
-make
+Makefile e scripts auxiliares;
 
-./bin/base/01_matmul 512
-OMP_NUM_THREADS=4 ./bin/openmp/matmul_openmp 512
-mpirun -np 4 ./bin/mpi/matmul_mpi 512
+Documentação do ambiente;
 
-make test
-./scripts/medir_speedup.sh 512 5 "1 2 4 8" "1 2 4 8"
-python3 scripts/analisar_resultados.py resultados/benchmarks_automatizados.csv
-```
+Baseline sequencial de multiplicação de matrizes densas;
 
-Se o Open MPI informar falta de slots, use `MPI_RUN_ARGS=--oversubscribe`
-somente quando necessário e registre essa condição na apresentação; ela afeta
-os tempos e não equivale a possuir oito núcleos disponíveis.
+Exemplos em Python e notebook.
 
-Os CSVs e metadados de ambiente ficam em `resultados/`. Resultados medidos em
-hosts diferentes não devem ser combinados na mesma comparação.
+Desenvolvimento do grupo
+[x] Seleção e organização do baseline correspondente ao tema;
 
-## Documentação
+[x] Estruturação inicial do repositório;
 
-- [Compilação e comandos](docs/compilacao.md)
-- [Auditoria e checklist do Marco 2](docs/auditoria_marco2.md)
-- [Roteiro da demonstração](docs/demonstracao.md)
-- [Preparação para a arguição](docs/arguicao.md)
-- [Perfilamento sequencial](docs/perfilamento_sequencial.md)
-- [Autoria e contribuições](AUTORES.md)
+[x] Análise do algoritmo sequencial;
 
-O relatório de auditoria registra separadamente o que foi comprovado e o que
-ainda depende de execução no ambiente oficial. O projeto não deve ser declarado
-pronto enquanto os itens bloqueados desse relatório não forem concluídos.
+[x] Perfilamento e identificação dos hotspots;
+
+[x] Medição do baseline para diferentes entradas;
+
+[ ] Estimativa da fração paralelizável e aplicação da Lei de Amdahl;
+
+[ ] Implementação com OpenMP;
+
+[ ] Implementação com MPI;
+
+[ ] Validação de corretude;
+
+[ ] Análise de speedup, eficiência e escalabilidade.
