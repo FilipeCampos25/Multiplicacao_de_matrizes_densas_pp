@@ -1,37 +1,61 @@
-# Ambiente de Laboratório — Programação Paralela (CCO085)
+# Multiplicação de matrizes densas — Programação Paralela
 
-**IESB 2026/2 · Prof. Rodrigo Gonçalves Pinto**
+Projeto acadêmico da disciplina CCO085 (IESB 2026/2) para comparar a
+multiplicação de matrizes densas sequencial, OpenMP e MPI. O ambiente Docker e
+o baseline fornecidos pelo professor foram preservados.
 
-Este é o ambiente oficial da disciplina. Todas as medições reportadas no
-Projeto Acadêmico IESB devem ser feitas aqui, para que os resultados sejam
-comparáveis entre os trios.
+## Implementações
 
-## Origem do ambiente
+- Sequencial: `codigos/baselines_sequenciais_CCO085/01_matmul.cpp`;
+- OpenMP: `codigos/01_openmp/matmul_openmp.cpp`;
+- MPI: `codigos/02_mpi/matmul_mpi.cpp`.
 
-A estrutura inicial deste repositório foi baseada no ambiente de desenvolvimento fornecido pelo professor da disciplina CCO085 — Programação Paralela.
+As três versões inicializam as matrizes da mesma forma, preservam a ordem de
+laços `i-k-j` e imprimem `N`, `checksum` e `tempo`.
 
-O grupo preservou o ambiente fornecido e selecionou os componentes relevantes ao problema de multiplicação de matrizes densas. O código sequencial de referência está localizado em:
-`codigos/baselines_sequenciais_CCO085/01_matmul.cpp`
+## Reprodução no ambiente oficial
 
-## Estado do projeto
+Na raiz do repositório:
 
-### Fornecido pela disciplina
+```bash
+docker compose build
+docker compose run --rm pp-lab
+```
 
-- Ambiente Docker e Dev Container;
-- Makefile e scripts auxiliares;
-- Documentação do ambiente;
-- Baseline sequencial de multiplicação de matrizes densas;
-- Exemplos em Python e notebook.
+Dentro do contêiner, em `/lab`:
 
-### Desenvolvimento do grupo
+```bash
+make clean
+make base
+make openmp
+make mpi
+make
 
-- [x] Seleção e organização do baseline correspondente ao tema;
-- [x] Estruturação inicial do repositório;
-- [ ] Análise do algoritmo sequencial;
-- [ ] Perfilamento e identificação dos hotspots;
-- [ ] Medição do baseline para diferentes entradas;
-- [ ] Estimativa da fração paralelizável e aplicação da Lei de Amdahl;
-- [ ] Implementação com OpenMP;
-- [ ] Implementação com MPI;
-- [ ] Validação de corretude;
-- [ ] Análise de speedup, eficiência e escalabilidade.
+./bin/base/01_matmul 512
+OMP_NUM_THREADS=4 ./bin/openmp/matmul_openmp 512
+mpirun -np 4 ./bin/mpi/matmul_mpi 512
+
+make test
+./scripts/medir_speedup.sh 512 5 "1 2 4 8" "1 2 4 8"
+python3 scripts/analisar_resultados.py resultados/benchmarks_automatizados.csv
+```
+
+Se o Open MPI informar falta de slots, use `MPI_RUN_ARGS=--oversubscribe`
+somente quando necessário e registre essa condição na apresentação; ela afeta
+os tempos e não equivale a possuir oito núcleos disponíveis.
+
+Os CSVs e metadados de ambiente ficam em `resultados/`. Resultados medidos em
+hosts diferentes não devem ser combinados na mesma comparação.
+
+## Documentação
+
+- [Compilação e comandos](docs/compilacao.md)
+- [Auditoria e checklist do Marco 2](docs/auditoria_marco2.md)
+- [Roteiro da demonstração](docs/demonstracao.md)
+- [Preparação para a arguição](docs/arguicao.md)
+- [Perfilamento sequencial](docs/perfilamento_sequencial.md)
+- [Autoria e contribuições](AUTORES.md)
+
+O relatório de auditoria registra separadamente o que foi comprovado e o que
+ainda depende de execução no ambiente oficial. O projeto não deve ser declarado
+pronto enquanto os itens bloqueados desse relatório não forem concluídos.

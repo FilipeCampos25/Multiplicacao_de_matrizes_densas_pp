@@ -66,4 +66,7 @@ $(BIN_DIR)/mpi/%: $(MPI_DIR)/%.cpp
 clean:
 	rm -rf $(BIN_DIR)
 
-.PHONY: all base openmp mpi clean
+test: all
+	bash ./scripts/test_matmul.sh
+
+.PHONY: all base openmp mpi test clean
