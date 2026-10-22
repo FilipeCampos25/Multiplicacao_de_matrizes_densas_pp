@@ -69,4 +69,7 @@ clean:
 test: all
 	bash ./scripts/test_matmul.sh
 
-.PHONY: all base openmp mpi test clean
+test-correctness: all
+	MATMUL_BIN_DIR="$(BIN_DIR)" python3 tests/test_correctness.py
+
+.PHONY: all base openmp mpi test test-correctness clean

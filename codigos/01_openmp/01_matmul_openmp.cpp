@@ -5,6 +5,7 @@
 #include <charconv>
 #include <climits>
 #include <cstdio>
+#include <cstdlib>
 #include <ctime>
 #include <string_view>
 #include <vector>
@@ -66,5 +67,12 @@ int main(int argc, char** argv) {
         soma += C[i];
     std::printf("N=%d  threads_configuradas=%d  checksum=%.6f  tempo=%.6f s\n",
                 N, threads_configuradas, soma, t1 - t0);
+    // Exportacao opcional para testes, em row-major e fora da medicao.
+    const char* dump = std::getenv("MATMUL_DUMP");
+    if (dump != nullptr && std::string_view(dump) == "1") {
+        std::printf("C=");
+        for (double value : C) std::printf(" %.17g", value);
+        std::printf("\n");
+    }
     return 0;
 }
