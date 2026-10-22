@@ -6,12 +6,13 @@ Este é o ambiente oficial da disciplina. Todas as medições reportadas no Proj
 
 O objetivo deste projeto é analisar o desempenho e a escalabilidade da multiplicação de matrizes densas, comparando um *baseline* sequencial com futuras implementações paralelas utilizando OpenMP e MPI.
 
-## Origem do ambiente
+- Sequencial: `codigos/baselines_sequenciais_CCO085/01_matmul.cpp`;
+- OpenMP: `codigos/01_openmp/matmul_openmp.cpp`;
+- MPI: `codigos/02_mpi/matmul_mpi.cpp`.
 
 A estrutura inicial deste repositório foi baseada no ambiente de desenvolvimento fornecido pelo professor da disciplina CCO085 – Programação Paralela.
 
-O grupo preservou o ambiente fornecido e selecionou os componentes relevantes ao problema de multiplicação de matrizes densas. O código sequencial de referência está localizado em:
-`codigos/baselines_sequenciais_CCO085/01_matmul.cpp`
+## Reprodução no ambiente oficial
 
 ## Compilação, Execução e Benchmarks
 
