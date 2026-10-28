@@ -1,5 +1,9 @@
 /* Multiplicacao distribuida de matrizes densas C = A x B com MPI.
  *
+ * Adaptacao do baseline 01_matmul.cpp, do Prof. Rodrigo Goncalves Pinto.
+ * A inicializacao deterministica, o armazenamento row-major e a ordem de
+ * lacos i-k-j foram preservados; o MPI distribui apenas blocos de linhas.
+ *
  * Estrategia: decomposicao equilibrada por blocos de linhas de A e C.
  * A matriz B e compartilhada integralmente por todos os processos.
  *
@@ -132,11 +136,13 @@ int main(int argc, char** argv) {
 
     const std::size_t element_count =
         static_cast<std::size_t>(dimension) * dimension;
-    std::vector<int> counts(process_count);
-    std::vector<int> displacements(process_count);
-    build_distribution(dimension, process_count, counts, displacements);
-
-    const int local_element_count = counts[rank];
+    const int base_rows = dimension / process_count;
+    const int extra_rows = dimension % process_count;
+    const int local_rows_expected =
+        base_rows + (rank < extra_rows ? 1 : 0);
+    const int local_element_count = local_rows_expected * dimension;
+    std::vector<int> counts;
+    std::vector<int> displacements;
     std::vector<double> matrix_a;
     std::vector<double> matrix_b;
     std::vector<double> matrix_c;
@@ -145,6 +151,11 @@ int main(int argc, char** argv) {
     int allocation_succeeded = 1;
 
     try {
+        // Estas estruturas tambem precisam participar do tratamento coletivo:
+        // uma excecao isolada antes do Allreduce deixaria outros ranks bloqueados.
+        counts.resize(static_cast<std::size_t>(process_count));
+        displacements.resize(static_cast<std::size_t>(process_count));
+        build_distribution(dimension, process_count, counts, displacements);
         matrix_b.resize(element_count);
         local_a.resize(static_cast<std::size_t>(local_element_count));
         local_c.assign(static_cast<std::size_t>(local_element_count), 0.0);
