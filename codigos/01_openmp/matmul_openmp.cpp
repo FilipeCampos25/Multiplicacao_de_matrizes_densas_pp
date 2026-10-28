@@ -1,5 +1,9 @@
 /* Multiplicacao de matrizes densas C = A x B com OpenMP.
  *
+ * Adaptacao do baseline 01_matmul.cpp, do Prof. Rodrigo Goncalves Pinto.
+ * A distribuicao do laco externo e a medicao seguem, conceitualmente, os
+ * exemplos 004_loop_for_paralell.cpp e 005_loop_for_paralell_time.cpp.
+ *
  * A paralelizacao distribui as linhas de C entre as threads. Cada thread
  * escreve em linhas exclusivas, portanto nao ha compartilhamento de escritas.
  * A ordem i-k-j do baseline foi preservada para manter a localidade de cache.
@@ -125,6 +129,8 @@ int main(int argc, char** argv) {
     }
     const double elapsed = omp_get_wtime() - start;
 
+    // Mantem a ordem sequencial do baseline. Uma reduction (exemplo 007)
+    // poderia mudar a ordem das somas e introduzir diferencas de arredondamento.
     double checksum = 0.0;
     for (double value : matrix_c) checksum += value;
     std::printf("N=%d  checksum=%.6f  tempo=%.6f s  threads=%d\n", dimension,

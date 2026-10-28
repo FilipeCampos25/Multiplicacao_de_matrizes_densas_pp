@@ -1,4 +1,10 @@
 /* Multiplicacao de matrizes densas C = A x B com OpenMP.
+ *
+ * Adaptacao do baseline 01_matmul.cpp, do Prof. Rodrigo Goncalves Pinto.
+ * A distribuicao do laco externo e a medicao seguem, conceitualmente, os
+ * exemplos 004_loop_for_paralell.cpp e 005_loop_for_paralell_time.cpp.
+ * A inicializacao, o armazenamento row-major e a ordem i-k-j foram preservados.
+ *
  * Compilar: make openmp
  * Executar: ./bin/openmp/01_matmul_openmp [N] [threads]
  */
@@ -6,7 +12,6 @@
 #include <climits>
 #include <cstdio>
 #include <cstdlib>
-#include <ctime>
 #include <string_view>
 #include <vector>
 #include <omp.h>
@@ -16,11 +21,6 @@ static bool inteiro_positivo(const char* argumento, int& valor) {
     auto resultado = std::from_chars(texto.data(), texto.data() + texto.size(), valor);
     return resultado.ec == std::errc{} &&
            resultado.ptr == texto.data() + texto.size() && valor > 0;
-}
-
-static double agora() {
-    timespec t; clock_gettime(CLOCK_MONOTONIC, &t);
-    return t.tv_sec + t.tv_nsec * 1e-9;
 }
 
 int main(int argc, char** argv) {
@@ -43,6 +43,7 @@ int main(int argc, char** argv) {
         omp_set_num_threads(threads);
     // Limite configurado para a proxima regiao, nao o tamanho efetivo da equipe.
     const int threads_configuradas = omp_get_max_threads();
+    int threads_efetivas = 1;
 
     std::vector<double> A(N*N), B(N*N), C(N*N, 0.0);
     for (int i = 0; i < N*N; i++) {
@@ -50,23 +51,31 @@ int main(int argc, char** argv) {
         B[i] = ((i * 7) % 100) * 0.01;
     }
 
-    double t0 = agora();
-    // Cada iteracao escreve em uma linha exclusiva de C; k, j e a sao locais.
-    #pragma omp parallel for schedule(static) default(none) shared(A, B, C, N)
-    for (int i = 0; i < N; i++)
-        for (int k = 0; k < N; k++) {
-            double a = A[i*N + k];
-            for (int j = 0; j < N; j++)
-                C[i*N + j] += a * B[k*N + j];
+    const double t0 = omp_get_wtime();
+    #pragma omp parallel default(none) shared(A, B, C, N, threads_efetivas)
+    {
+        // Uma unica thread registra o tamanho efetivo da equipe, como no exemplo 005.
+        #pragma omp single
+        threads_efetivas = omp_get_num_threads();
+
+        // Adaptacao do exemplo 004: cada iteracao calcula uma linha exclusiva de C.
+        #pragma omp for schedule(static)
+        for (int i = 0; i < N; i++)
+            for (int k = 0; k < N; k++) {
+                const double a = A[i*N + k];
+                for (int j = 0; j < N; j++)
+                    C[i*N + j] += a * B[k*N + j];
+            }
         }
-    // A barreira implicita garante a conclusao de todas as threads.
-    double t1 = agora();
+    // A barreira implicita do omp for conclui C antes da saida da regiao.
+    const double t1 = omp_get_wtime();
 
     double soma = 0.0;
     for (int i = 0; i < N*N; i++)
         soma += C[i];
-    std::printf("N=%d  threads_configuradas=%d  checksum=%.6f  tempo=%.6f s\n",
-                N, threads_configuradas, soma, t1 - t0);
+    std::printf("N=%d  threads_configuradas=%d  checksum=%.6f  tempo=%.6f s"
+                "  threads=%d\n",
+                N, threads_configuradas, soma, t1 - t0, threads_efetivas);
     // Exportacao opcional para testes, em row-major e fora da medicao.
     const char* dump = std::getenv("MATMUL_DUMP");
     if (dump != nullptr && std::string_view(dump) == "1") {
