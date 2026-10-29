@@ -42,8 +42,12 @@ mpirun -np 4 ./bin/mpi/matmul_mpi 512
 
 ```bash
 make test
+make test-correctness
+python3 -m unittest discover -s tests -v
 OMP_NUM_THREADS=4 ./bin/openmp/matmul_openmp 7 --verify
 mpirun -np 4 ./bin/mpi/matmul_mpi 7 --verify
+MATMUL_DUMP=1 OMP_NUM_THREADS=2 ./bin/openmp/matmul_openmp 3
+MATMUL_DUMP=1 mpirun -np 3 ./bin/mpi/matmul_mpi 3
 ```
 
 `make test` compara os checksums das três versões para diferentes dimensões,
@@ -53,6 +57,11 @@ verificação elemento a elemento usa erro absoluto/relativo combinado de
 `1e-12 * (1 + |esperado|)`; a comparação dos checksums impressos usa
 `1e-9 * (1 + |baseline|)` porque a saída tem seis casas decimais.
 
+O programa aceita somente matrizes quadradas N×N geradas internamente. Não há
+uma API de dimensões independentes. Zero, negativos, texto não numérico,
+argumentos extras e dimensões fora dos limites válidos devem produzir retorno
+não zero; o baseline original não é alterado para incorporar essas proteções.
+
 ## Coletar e analisar benchmarks
 
 ```bash
@@ -61,6 +70,19 @@ verificação elemento a elemento usa erro absoluto/relativo combinado de
 ./scripts/medir_speedup.sh 1024 5 "1 2 4 8" "1 2 4 8" resultados/benchmark_1024.csv
 python3 scripts/analisar_resultados.py resultados/benchmark_512.csv
 ```
+
+Para as variantes OpenMP da mesma fonte:
+
+```bash
+make benchmark-openmp-build
+make benchmark-openmp \
+  BENCHMARK_ARGS="--sizes 256 512 1024 --threads 1 2 4 8 \
+  --schedules static dynamic guided \
+  --output resultados/openmp_nova_desempenho.csv"
+```
+
+Escolha sempre um arquivo novo. O coletor recusa sobrescrever saídas existentes;
+os CSVs históricos não devem ser editados ou substituídos.
 
 ## Executar a multiplicacao com OpenMP
 
@@ -89,19 +111,25 @@ nao mede a quantidade efetiva de threads. Ajustes do runtime, como `OMP_DYNAMIC`
 e `OMP_THREAD_LIMIT`, podem reduzir a equipe utilizada. Sem o segundo argumento,
 o programa respeita a configuracao do runtime, incluindo `OMP_NUM_THREADS`.
 
-O laço externo `i` usa `parallel for schedule(static) default(none)`, com A, B, C
-e N explicitamente compartilhados. Cada thread atualiza linhas exclusivas de C;
+O laço externo `i` usa uma região `parallel` e um `for schedule(static)`, com A,
+B, C e N explicitamente compartilhados. Cada thread atualiza linhas exclusivas de C;
 os indices de iteracao e o escalar `a` sao privados pelo escopo ou pelas regras
 do OpenMP. A ordem `i-k-j` e a inicializacao deterministica sao preservadas.
 Como cada linha exige a mesma quantidade de operacoes, `schedule(static)` tende
 a equilibrar o trabalho sem a distribuicao dinamica de iteracoes. Isso justifica
 a escolha inicial, sem representar um ganho de desempenho medido.
 
-A medicao com `clock_gettime(CLOCK_MONOTONIC)` envolve apenas a multiplicacao,
+A medição com `omp_get_wtime()` segue o exemplo oficial
+`005_loop_for_paralell_time.cpp` e envolve apenas a multiplicação,
 incluindo os custos de entrada na regiao paralela e de sincronizacao. A barreira
 implicita garante que todas as threads terminaram antes do instante final.
 Inicializacao e checksum ficam fora do intervalo; a soma de C continua sequencial,
 na mesma ordem do baseline.
+
+A versão de benchmark registra a equipe efetiva com `omp_get_num_threads()` em
+uma região `single`. A versão didática preserva também `threads_configuradas`,
+obtido com `omp_get_max_threads()`. Não há cronômetros individuais por thread,
+pois depois da barreira eles incluiriam espera e acrescentariam overhead.
 
 Para comparar os checksums nas dimensoes da Issue #4, execute:
 
@@ -129,3 +157,12 @@ docker compose run --rm pp-lab make openmp
 docker compose run --rm -e OMP_NUM_THREADS=4 pp-lab ./bin/openmp/01_matmul_openmp 128
 docker compose run --rm pp-lab ./bin/openmp/01_matmul_openmp 128 2
 ```
+
+## Estado da última validação
+
+Passaram 8 testes de análise, 6 testes do coletor OpenMP e 10 testes do detector
+de corretude. Os comandos `make clean`, `make all`, `make test`,
+`make test-correctness`, a descoberta completa, o build das variantes e o smoke
+benchmark permaneceram bloqueados no host disponível por ausência de Make,
+compiladores, MPI, Docker e WSL. Esses comandos ainda precisam terminar com
+sucesso no ambiente oficial; casos bloqueados não são considerados aprovados.

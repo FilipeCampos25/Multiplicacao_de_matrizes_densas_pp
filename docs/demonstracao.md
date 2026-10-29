@@ -1,21 +1,22 @@
 # Roteiro de demonstração técnica — até 9 minutos
 
-Planejamento: 7min30s de conteúdo e até 1min30s de margem para comandos,
-troca de tela e imprevistos. Substitua os campos `[DADO REAL]` somente depois
-da coleta no ambiente oficial.
+Planejamento: 7min30s de conteúdo e até 1min30s de margem para comandos, troca
+de tela e imprevistos. Use somente resultados registrados com ambiente e
+metodologia; não complete lacunas com estimativas.
 
 ## 0:00–0:45 — Problema e objetivo
 
 Multiplicar A e B densas para obter C exige aproximadamente `2N³` operações e
 `O(N²)` memória. O objetivo é comparar o baseline com paralelismo em memória
-compartilhada (OpenMP) e distribuída (MPI), mantendo a mesma entrada e ordem
-de laços para uma comparação controlada.
+compartilhada (OpenMP) e distribuída (MPI), mantendo a mesma entrada e ordem de
+laços.
 
 ## 0:45–1:30 — Baseline sequencial
 
-Mostrar o laço `i-k-j`: para cada linha i, reutiliza-se `A[i,k]` e percorre-se
-B e C contiguamente em j. Explicar que inicialização e checksum ficam fora do
-tempo. Executar:
+Identificar `01_matmul.cpp` como código original do Prof. Rodrigo Gonçalves
+Pinto. Mostrar o laço `i-k-j`: para cada linha i, reutiliza-se `A[i,k]` e
+percorrem-se B e C contiguamente em j. Inicialização e checksum ficam fora do
+tempo.
 
 ```bash
 ./bin/base/01_matmul 512
@@ -24,8 +25,10 @@ tempo. Executar:
 ## 1:30–2:30 — OpenMP
 
 Mostrar `parallel`, `single` e `for schedule(static)`. Cada iteração de i
-corresponde a uma linha exclusiva de C; A e B são somente leitura, então não há
-corrida. A divisão estática tem baixo overhead e carga uniforme por linha.
+corresponde a uma linha exclusiva de C; A e B são somente leitura, portanto não
+há corrida. Relacionar a adaptação aos exemplos oficiais 004 (distribuição do
+`for`) e 005 (`omp_get_wtime()` e equipe efetiva). As proteções, testes,
+scripts e automações são contribuições do grupo.
 
 ```bash
 OMP_NUM_THREADS=4 ./bin/openmp/matmul_openmp 512 --verify
@@ -34,9 +37,9 @@ OMP_NUM_THREADS=4 ./bin/openmp/matmul_openmp 512 --verify
 ## 2:30–3:45 — MPI
 
 Explicar que o rank 0 cria A e B; `Scatterv` distribui linhas de A, `Bcast`
-replica B, cada rank calcula suas linhas e `Gatherv` reúne C. `counts` e
-`displacements` tratam N não divisível por P; os primeiros `N mod P` ranks
-recebem uma linha extra.
+replica B, cada rank calcula suas linhas em `i-k-j` e `Gatherv` reúne C.
+`counts` e `displacements` tratam N não divisível por P; os primeiros
+`N mod P` ranks recebem uma linha extra e, se `P>N`, alguns recebem zero.
 
 ```bash
 mpirun -np 4 ./bin/mpi/matmul_mpi 7 --verify
@@ -46,51 +49,50 @@ Apontar `carga_linhas min/max` e os tempos máximos por etapa.
 
 ## 3:45–4:35 — Validação
 
-Explicar que a mesma inicialização determinística permite comparar checksums.
-Além disso, `--verify` recalcula cada elemento esperado e aplica tolerância
-`1e-12(1+|esperado|)`. Mostrar rapidamente:
+A mesma inicialização determinística permite comparar checksums. Como checksum
+não prova igualdade, `--verify` recalcula cada elemento e `MATMUL_DUMP=1`
+permite comparação externa para N pequeno.
 
 ```bash
 make test
+make test-correctness
 ```
 
-Não esperar toda a suíte se o ensaio indicar que ultrapassa a margem; nesse
-caso, apresentar uma saída já registrada e executar apenas N=7 ao vivo.
+Se a regressão do ambiente oficial ainda estiver pendente, declarar o bloqueio;
+não apresentar testes não executados como aprovados.
 
 ## 4:35–6:10 — Resultados
 
-Mostrar os gráficos reais de tempo, speedup e eficiência. Declarar N,
-repetições, mediana, CPU, núcleos, compilador e eventual sobresubscrição.
+Mostrar apenas gráficos reais. Declarar N, repetições, mediana, CPU, compilador,
+afinidade e eventual sobresubscrição.
 
-- OpenMP: `[DADO REAL: melhor configuração e limite observado]`.
-- MPI: `[DADO REAL: melhor configuração e proporção comunicação/computação]`.
-- Speedup: `S(p)=Tseq/Tpar`.
-- Eficiência: `E(p)=S(p)/p`.
-- Variabilidade: `[DADO REAL: min–máx ou desvio-padrão]`.
+- OpenMP: usar as tabelas e ressalvas de `docs/avaliacao_openmp.md`;
+- MPI: declarar que a coleta comparável permanece pendente;
+- speedup: `S(p)=Tseq/Tpar`;
+- eficiência: `E(p)=S(p)/p`;
+- variabilidade: apresentar mínimo, máximo, desvio-padrão ou CV reais.
 
-Não usar o CSV sequencial antigo como se fosse comparável às novas execuções.
+Não usar o CSV sequencial antigo como se fosse diretamente comparável a uma
+coleta feita com fonte, flags ou ambiente diferentes.
 
 ## 6:10–7:00 — Escalabilidade e Amdahl
 
-Escalabilidade forte mantém N e aumenta recursos; a eficiência normalmente cai
-quando overhead, comunicação e banda de memória dominam. Escalabilidade fraca
-aumenta o problema para manter trabalho aproximado por recurso. Pela Lei de
-Amdahl, com fração paralelizável f, o limite é
-`S(p)=1/((1-f)+f/p)` e `S(infinito)=1/(1-f)`. Inserir somente a estimativa de f
-obtida dos dados: `[DADO REAL]`.
+Escalabilidade forte mantém N e aumenta recursos; a fraca aumenta o problema
+para manter trabalho aproximado por recurso. Pela Lei de Amdahl,
+`S(p)=1/((1-f)+f/p)` e `S(infinito)=1/(1-f)`. Só apresentar uma estimativa de
+f se ela tiver sido calculada a partir de dados comparáveis e identificados.
 
 ## 7:00–7:30 — Conclusão
 
-OpenMP é direto em um nó e compartilha as matrizes; MPI explicita distribuição
-e comunicação e pode escalar entre nós. O ganho depende de N ser grande o
-suficiente para amortizar criação de threads/coletivas e dos limites de cache,
-memória e hardware. Encerrar com as lacunas honestamente documentadas.
+OpenMP compartilha as matrizes em um nó; MPI explicita distribuição e
+comunicação. Ganhos dependem do tamanho, overhead, cache, memória e hardware.
+Encerrar distinguindo resultados medidos, hipóteses e pendências.
 
 ## Plano de contingência
 
-- Deixar o contêiner aberto, binários compilados e comandos no histórico.
-- Usar N=7 para corretude e N=512 apenas se o ensaio confirmar tempo seguro.
-- Ter capturas/saídas reais de uma execução anterior, com data e ambiente.
-- Se 8 ranks falharem por slots, não improvisar: usar 4 ou declarar a
-  sobresubscrição e seu impacto.
-- Nunca editar CSV, trocar gráfico ou ajustar thread/processo durante a fala.
+- Deixar o contêiner aberto, binários compilados e comandos no histórico;
+- usar N=7 para corretude e N=512 somente após ensaio;
+- manter capturas reais com data e ambiente;
+- se ranks excederem os slots, reduzir P ou declarar sobresubscrição;
+- nunca editar CSV ou trocar configuração durante a apresentação;
+- declarar qualquer regressão bloqueada em vez de tratá-la como aprovação.
