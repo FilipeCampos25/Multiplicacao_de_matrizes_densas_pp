@@ -60,3 +60,31 @@ O coletor exige um caminho novo e cria o arquivo de ambiente correspondente. Res
 - coletar etapas MPI separadas em ambiente comparável para decompor comunicação e computação;
 - repetir grupos de alta variabilidade com controle adicional de ruído e afinidade;
 - executar nova regressão e nova coleta após qualquer mudança executável.
+
+## Complementação das etapas MPI
+
+`matmul_mpi.cpp` já mede `MPI_Scatterv`, `MPI_Bcast`, computação local,
+`MPI_Gatherv` e total com `MPI_Wtime`; reduz os quatro tempos e o total com
+`MPI_MAX`. `scripts/benchmark_mpi.sh` já extrai esses campos, realiza aquecimento,
+exige repetições válidas, verifica checksum e grava carga mínima/máxima. Portanto,
+não é necessária alteração do algoritmo MPI para obter a decomposição.
+
+O CSV conjunto histórico não contém esses campos. Para obter evidência nova sem
+sobrescrevê-lo, execute em Linux com GCC, Open MPI e recursos adequados:
+
+```bash
+DIMENSOES="256 512 1024" PROCESSOS="1 2 4 8" \
+MPI_RUN_ARGS="--use-hwthread-cpus --bind-to hwthread" \
+bash scripts/benchmark_mpi.sh 5 resultados/mpi_etapas_complementar.csv
+
+python3 scripts/analisar_complementacao.py \
+  --mpi resultados/mpi_etapas_complementar.csv \
+  --output-dir resultados/complementacao_marco2
+```
+
+O resumo produzido contém medianas e razões etapa/tempo total para cada N e p.
+Essas razões ajudam a comparar configurações, mas não formam uma decomposição
+aditiva: o máximo de cada etapa pode pertencer a ranks diferentes, e uma coletiva
+inclui espera causada por desbalanceamento anterior. Neste host não havia
+`mpic++`, `mpirun`, Docker ou distribuição WSL, então a coleta complementar não
+foi executada e o CSV histórico permaneceu intacto.
