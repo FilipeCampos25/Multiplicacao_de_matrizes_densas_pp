@@ -1,104 +1,110 @@
-# Roteiro de demonstração técnica — até 9 minutos
+# Roteiro reproduzível da demonstração — até 9 minutos
 
-Planejamento: 7min30s de conteúdo e até 1min30s de margem para comandos, troca
-de tela e imprevistos. Use somente resultados registrados com ambiente e
-metodologia; não complete lacunas com estimativas.
+Este roteiro pressupõe Linux ou o contêiner do projeto, com `make`, GCC, OpenMP
+e Open MPI. Antes da apresentação, executar a sequência completa em uma cópia
+limpa e guardar a saída. A coleta de 22/10/2026 é histórica: o baseline atual
+mantém o hash registrado, mas Makefile e fontes OpenMP/MPI mudaram depois dela.
 
-## 0:00–0:45 — Problema e objetivo
-
-Multiplicar A e B densas para obter C exige aproximadamente `2N³` operações e
-`O(N²)` memória. O objetivo é comparar o baseline com paralelismo em memória
-compartilhada (OpenMP) e distribuída (MPI), mantendo a mesma entrada e ordem de
-laços.
-
-## 0:45–1:30 — Baseline sequencial
-
-Identificar `01_matmul.cpp` como código original do Prof. Rodrigo Gonçalves
-Pinto. Mostrar o laço `i-k-j`: para cada linha i, reutiliza-se `A[i,k]` e
-percorrem-se B e C contiguamente em j. Inicialização e checksum ficam fora do
-tempo.
+## Preparação (antes do cronômetro)
 
 ```bash
-./bin/base/01_matmul 512
-```
-
-## 1:30–2:30 — OpenMP
-
-Mostrar `parallel`, `single` e `for schedule(static)`. Cada iteração de i
-corresponde a uma linha exclusiva de C; A e B são somente leitura, portanto não
-há corrida. Relacionar a adaptação aos exemplos oficiais 004 (distribuição do
-`for`) e 005 (`omp_get_wtime()` e equipe efetiva). As proteções, testes,
-scripts e automações são contribuições do grupo.
-
-```bash
-OMP_NUM_THREADS=4 ./bin/openmp/matmul_openmp 512 --verify
-```
-
-## 2:30–3:45 — MPI
-
-Explicar que o rank 0 cria A e B; `Scatterv` distribui linhas de A, `Bcast`
-replica B, cada rank calcula suas linhas em `i-k-j` e `Gatherv` reúne C.
-`counts` e `displacements` tratam N não divisível por P; os primeiros
-`N mod P` ranks recebem uma linha extra e, se `P>N`, alguns recebem zero.
-
-```bash
-mpirun -np 4 ./bin/mpi/matmul_mpi 7 --verify
-```
-
-Apontar `carga_linhas min/max` e os tempos máximos por etapa.
-
-## 3:45–4:35 — Validação
-
-A mesma inicialização determinística permite comparar checksums. Como checksum
-não prova igualdade, `--verify` recalcula cada elemento e `MATMUL_DUMP=1`
-permite comparação externa para N pequeno.
-
-```bash
-make test
+docker compose build
+docker compose run --rm pp-lab
+make clean && make all
 make test-correctness
 ```
 
-Apresentar o registro histórico de 22/10/2026 como tal: 142 PASS, 0 FAIL e 0
-SKIP. Não afirmar que a suíte foi reexecutada na versão corrente sem um novo
-registro de ambiente.
+Resultado exigido para prosseguir: compilação sem erro e a suíte corrente sem
+falhas. Se isso não acontecer, declarar a falha; não usar o registro histórico
+de `142 PASS` como se fosse a execução atual. Deixar abertos
+`resultados/graficos/speedup_cae72fda_N1024.svg` e
+`resultados/issue10_desempenho_ambiente.txt`.
 
-## 4:35–6:10 — Resultados
+## 0:00–0:45 — problema e origem
 
-Mostrar apenas gráficos reais. Declarar N, repetições, mediana, CPU, compilador,
-afinidade e eventual sobresubscrição.
+Apresentar multiplicação densa `C=A×B`, custo aproximado `2N³` e memória
+`O(N²)`. Identificar
+`codigos/baselines_sequenciais_CCO085/01_matmul.cpp` como baseline fornecido
+pelo professor e separar esse material das adaptações do grupo.
 
-- OpenMP: usar as tabelas e ressalvas de `docs/avaliacao_openmp.md`;
-- MPI: usar a coleta conjunta comparável de 22/10/2026, com suas limitações;
-- speedup: `S(p)=Tseq/Tpar`;
-- eficiência: `E(p)=S(p)/p`;
-- variabilidade: apresentar mínimo, máximo, desvio-padrão ou CV reais.
+## 0:45–1:35 — baseline ao vivo
 
-Não usar o CSV sequencial antigo como se fosse diretamente comparável a uma
-coleta feita com fonte, flags ou ambiente diferentes.
+```bash
+./bin/base/01_matmul 256
+```
 
-Os 175 registros conjuntos estão em `resultados/issue10_desempenho.csv`; o
-ambiente em `resultados/issue10_desempenho_ambiente.txt`; os 21 SVGs em
-`resultados/graficos/`; e a interpretação em
-[analise_desempenho.md](analise_desempenho.md).
+Mostrar `N`, tempo e checksum realmente impressos. Para a entrada determinística
+de N=256, a evidência histórica registra checksum `4109165.296`; conferir a
+saída atual em vez de prometer um tempo, que depende da máquina.
 
-## 6:10–7:00 — Escalabilidade e Amdahl
+## 1:35–3:00 — OpenMP com duas equipes
 
-Escalabilidade forte mantém N e aumenta recursos; a fraca aumenta o problema
-para manter trabalho aproximado por recurso. Pela Lei de Amdahl,
-`S(p)=1/((1-f)+f/p)` e `S(infinito)=1/(1-f)`. Só apresentar uma estimativa de
-f se ela tiver sido calculada a partir de dados comparáveis e identificados.
+Explicar que A e B são somente leitura e cada thread escreve em linhas distintas
+de C. Executar o mesmo problema com equipes diferentes:
 
-## 7:00–7:30 — Conclusão
+```bash
+OMP_NUM_THREADS=1 ./bin/openmp/matmul_openmp 256 --verify
+OMP_NUM_THREADS=4 ./bin/openmp/matmul_openmp 256 --verify
+```
 
-OpenMP compartilha as matrizes em um nó; MPI explicita distribuição e
-comunicação. Ganhos dependem do tamanho, overhead, cache, memória e hardware.
-Encerrar distinguindo resultados medidos, hipóteses e pendências.
+Apontar a equipe efetivamente usada, o checksum e o resultado de `--verify`.
+Não prometer que quatro threads serão mais rápidas em toda máquina ou execução.
 
-## Plano de contingência
+## 3:00–4:30 — MPI com dois números de processos
 
-- Deixar o contêiner aberto, binários compilados e comandos no histórico;
-- usar N=7 para corretude e N=512 somente após ensaio;
-- manter capturas reais com data e ambiente;
-- se ranks excederem os slots, reduzir P ou declarar sobresubscrição;
-- nunca editar CSV ou trocar configuração durante a apresentação;
-- declarar qualquer regressão bloqueada em vez de tratá-la como aprovação.
+Explicar `Scatterv` de A, `Bcast` de B, cálculo local e `Gatherv` de C. N=7
+torna visível a divisão irregular e permite a comparação rápida:
+
+```bash
+mpirun -np 1 ./bin/mpi/matmul_mpi 7 --verify
+mpirun -np 4 ./bin/mpi/matmul_mpi 7 --verify
+```
+
+Mostrar checksum, verificação, carga mínima/máxima e tempos por etapa. Se o
+launcher recusar slots, reduzir para dois processos e registrar a limitação;
+não habilitar sobresubscrição silenciosamente.
+
+## 4:30–5:30 — comparação de corretude
+
+```bash
+MATMUL_DUMP=1 ./bin/base/01_matmul 3
+MATMUL_DUMP=1 OMP_NUM_THREADS=4 ./bin/openmp/matmul_openmp 3 --verify
+MATMUL_DUMP=1 mpirun -np 4 ./bin/mpi/matmul_mpi 3 --verify
+```
+
+Comparar os nove elementos e o checksum. Explicar que checksum é triagem; a
+metodologia em `docs/testes_corretude.md` também compara elementos para casos
+pequenos, com tolerância numérica.
+
+## 5:30–7:15 — speedup medido
+
+Abrir `resultados/graficos/speedup_cae72fda_N1024.svg` e declarar:
+
+- dados da coleta conjunta de 22/10/2026, não da execução ao vivo;
+- cinco repetições válidas por configuração e mediana como medida principal;
+- Intel i7-4770S, oito CPUs lógicas expostas, GCC 13.3.0 e Open MPI 4.1.6;
+- `S(p)=Tseq/Tpar(p)` e `E(p)=S(p)/p`;
+- a análise registrada informa speedup OpenMP de 3,805 em N=1024/p=8 e
+  regressão MPI de p=4 para p=8 em N=512/1024;
+- afinidades OpenMP/MPI não eram idênticas e o MPI rodou em uma única máquina.
+
+Não apresentar o gráfico como validação dos fontes atuais: os hashes OpenMP/MPI
+registrados em 22/10 diferem dos hashes atuais.
+
+## 7:15–8:20 — escalabilidade e Amdahl
+
+Forte: N fixo e mais recursos. Fraca: trabalho aproximadamente constante por
+recurso, usando `N(p)=round(256·p^(1/3))`. Mostrar que ambas existem nos CSVs,
+mas a série fraca apresentou crescimento de tempo.
+
+Para Amdahl, usar `S(p)=1/((1-f)+f/p)`. Os gráficos de Amdahl são cenários
+hipotéticos para frações seriais de 5%, 10% e 20%; não são ajuste nem estimativa
+da fração serial real.
+
+## 8:20–9:00 — conclusão e contingência
+
+Concluir que OpenMP compartilha memória e MPI explicita distribuição e
+comunicação; ganhos dependem de tamanho, overhead, cache, afinidade e hardware.
+Se a validação corrente não tiver sido concluída, encerrar com essa pendência.
+Manter capturas reais como contingência, mas identificá-las com data, commit e
+ambiente; nunca editar CSVs durante a apresentação.

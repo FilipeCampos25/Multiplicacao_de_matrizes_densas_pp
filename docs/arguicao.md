@@ -84,11 +84,12 @@ numérica justificada.
 reduzida pelo máximo, possivelmente vindo de ranks diferentes, e coletivas
 incluem espera. A soma dos máximos não é uma decomposição exata do caminho total.
 
-**Qual limitação experimental deve ser declarada?**  O baseline histórico foi
-medido em condições que nem sempre são comparáveis às coletas posteriores. Há
-resultados OpenMP documentados com suas ressalvas, mas a coleta MPI comparável e
-a regressão funcional final no ambiente oficial permanecem pendentes. Testes
-bloqueados por falta de ferramentas não contam como aprovados.
+**Qual limitação experimental deve ser declarada?**  A coleta conjunta de
+22/10/2026 contém baseline, OpenMP e MPI comparáveis no mesmo ambiente, mas os
+hashes atuais do Makefile e das fontes OpenMP/MPI diferem dos registrados nessa
+coleta. Portanto, os resultados são históricos e a regressão funcional dos
+fontes atuais no ambiente oficial permanece pendente. Testes bloqueados por
+falta de ferramentas não contam como aprovados.
 
 **Quais melhorias futuras são legítimas?**  Concluir a regressão no contêiner,
 coletar MPI no mesmo ambiente, aumentar a cobertura de entradas inválidas e,
