@@ -2,6 +2,12 @@
 
 ## Perguntas e respostas essenciais
 
+**O que veio do professor e o que foi feito pelo grupo?**  O professor forneceu
+o baseline `01_matmul.cpp` e os exemplos didáticos de OpenMP. O grupo preservou
+a inicialização, o armazenamento row-major e o kernel `i-k-j`, adaptou a divisão
+por linhas para OpenMP/MPI e desenvolveu proteções de entrada, instrumentação,
+verificação, testes, scripts e documentação.
+
 **Qual é a diferença entre processo e thread?**  Processos têm espaços de
 endereçamento independentes e comunicam explicitamente; threads do mesmo
 processo compartilham memória e outros recursos, mas têm pilhas próprias.
@@ -21,6 +27,11 @@ distribui as iterações do laço seguinte. No código, `parallel` foi separado 
 **Por que `schedule(static)`?**  Cada linha tem praticamente o mesmo trabalho
 `O(N²)`. Divisão estática equilibra a carga com overhead menor que escalonamento
 dinâmico ou guiado. Esses outros modos só devem ser comparados experimentalmente.
+
+**Como os exemplos 004 e 005 foram aproveitados?**  O 004 fundamenta a divisão
+do laço externo com `omp for schedule(static)`. O 005 fundamenta
+`omp_get_wtime()`, a região `single` e `omp_get_num_threads()`. Seus cálculos
+vetoriais não foram copiados como se fossem multiplicação de matrizes.
 
 **Para que servem `MPI_Init` e `MPI_Finalize`?**  Inicializam e encerram o
 ambiente MPI. Nenhuma operação MPI deve ocorrer antes da inicialização ou após
@@ -74,5 +85,13 @@ reduzida pelo máximo, possivelmente vindo de ranks diferentes, e coletivas
 incluem espera. A soma dos máximos não é uma decomposição exata do caminho total.
 
 **Qual limitação experimental deve ser declarada?**  O baseline histórico foi
-medido fora do contêiner; ainda faltam medições paralelas comparáveis no
-ambiente oficial. Até essa coleta ocorrer, não há conclusão quantitativa válida.
+medido em condições que nem sempre são comparáveis às coletas posteriores. Há
+resultados OpenMP documentados com suas ressalvas, mas a coleta MPI comparável e
+a regressão funcional final no ambiente oficial permanecem pendentes. Testes
+bloqueados por falta de ferramentas não contam como aprovados.
+
+**Quais melhorias futuras são legítimas?**  Concluir a regressão no contêiner,
+coletar MPI no mesmo ambiente, aumentar a cobertura de entradas inválidas e,
+somente em experimentos separados, avaliar afinidade ou tiling. Matrizes
+retangulares, Strassen e uma implementação híbrida não pertencem ao escopo da
+comparação atual.

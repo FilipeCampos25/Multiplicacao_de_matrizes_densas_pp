@@ -61,7 +61,8 @@ class BenchmarkTests(unittest.TestCase):
                 str(parent / "memory.current"): "250000",
                 "/proc/meminfo": "MemAvailable: 2000 kB"}
         with mock.patch.object(benchmark, "cgroup_paths", return_value=[child, parent]), \
-             mock.patch.object(benchmark.os, "sched_getaffinity", return_value=set(range(12))), \
+             mock.patch.object(benchmark.os, "sched_getaffinity", return_value=set(range(12)),
+                               create=True), \
              mock.patch.object(benchmark, "read_text", side_effect=lambda path: data.get(str(path))):
             resources = benchmark.resources()
         self.assertEqual(resources["cpu_capacity"], 2.5)

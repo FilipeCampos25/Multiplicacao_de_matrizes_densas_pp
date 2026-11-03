@@ -233,10 +233,12 @@ class Programs:
 
 
 class Case(unittest.TestCase):
-    def __init__(self, label, action):
+    def __init__(self, label="runTest", action=None):
         super().__init__("runTest")
         self.label = label
-        self.action = action
+        # unittest discover instancia classes TestCase antes de chamar load_tests.
+        # A instancia provisoria e descartada pela suite retornada por load_tests.
+        self.action = action or (lambda: None)
         self.detail = ""
 
     def __str__(self):
