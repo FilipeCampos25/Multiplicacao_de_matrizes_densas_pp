@@ -1,17 +1,25 @@
 # Autores e contribuições
 
-- **Prof. Rodrigo Gonçalves Pinto:** autor do baseline sequencial
-  `codigos/baselines_sequenciais_CCO085/01_matmul.cpp` e dos exemplos didáticos
-  mantidos em `codigos/baselines_sequenciais_CCO085/`.
-- **Davi:** perfilamento sequencial, automação inicial de benchmarks em Bash,
-  estruturação da extração CSV e documentação técnica e de reprodutibilidade.
-- **Grupo do projeto:** adaptação do baseline para OpenMP e MPI, validação de
-  argumentos, instrumentação, verificação numérica, scripts de coleta e análise,
-  testes automatizados e documentação de integração.
+## Integrantes e responsabilidades formais
 
-## Limite de atribuição
+| Integrante | Matrícula | Responsabilidade principal proposta |
+| --- | --- | --- |
+| Filipe de Campos Duarte | 2412130132 | implementação MPI e integração final |
+| Fabrício de Campos Duarte | 2412130139 | OpenMP, testes de corretude e análise experimental |
+| Davi Vinícius de Sousa Costa | 2412130133 | baseline, perfilamento, scripts de benchmark e documentação |
 
-O kernel matemático, a inicialização determinística e a ordem `i-k-j` têm como
-referência o baseline do professor. A paralelização, a distribuição MPI, as
-proteções, os testes e a automação foram desenvolvidos ou adaptados pelo grupo.
-Os arquivos originais do professor não devem ser modificados.
+**Validação pendente:** a tabela registra a divisão formal informada para o trabalho. O histórico sustenta atividades compatíveis, mas não comprova sozinho um acordo interno completo nem exclusividade. Os três integrantes devem validá-la antes da entrega.
+
+## Contribuições adicionais sustentadas pelo histórico
+
+- **Filipe:** implementação MPI e testes iniciais (PR #15), instrumentação MPI (PR #17), integração das implementações, testes, análise e documentação (PR #19), além de ajustes posteriores.
+- **Fabrício:** commits das Issues #4, #6, #8 e #10 adicionaram OpenMP, suíte de corretude, coleta OpenMP e consolidação experimental com CSVs, gráficos e análise. Aparecem sob `Fabricio2407` e `FabricioCampos`, com o mesmo e-mail registrado.
+- **Davi:** commits de `davivcosta` documentaram perfilamento e ambiente sequencial, adaptaram o benchmark e a coleta CSV e registraram metodologia, referências e documentação.
+
+Commits de merge ou revisão não provam autoria exclusiva do conteúdo incorporado. Atividades coletivas sem evidência individual suficiente permanecem atribuídas ao grupo.
+
+## Código fornecido pelo professor
+
+O **Prof. Rodrigo Gonçalves Pinto** é autor do código sequencial original `codigos/baselines_sequenciais_CCO085/01_matmul.cpp` e dos exemplos didáticos em `codigos/baselines_sequenciais_CCO085/`. São material fornecido ao grupo, não contribuição autoral dos integrantes.
+
+O kernel, a inicialização determinística, o armazenamento row-major e a ordem `i-k-j` derivam desse baseline. Paralelização OpenMP, distribuição MPI, validações, testes, automação, experimentos e documentação foram desenvolvidos ou adaptados pelo grupo.

@@ -58,8 +58,9 @@ make test
 make test-correctness
 ```
 
-Se a regressão do ambiente oficial ainda estiver pendente, declarar o bloqueio;
-não apresentar testes não executados como aprovados.
+Apresentar o registro histórico de 22/10/2026 como tal: 142 PASS, 0 FAIL e 0
+SKIP. Não afirmar que a suíte foi reexecutada na versão corrente sem um novo
+registro de ambiente.
 
 ## 4:35–6:10 — Resultados
 
@@ -67,13 +68,18 @@ Mostrar apenas gráficos reais. Declarar N, repetições, mediana, CPU, compilad
 afinidade e eventual sobresubscrição.
 
 - OpenMP: usar as tabelas e ressalvas de `docs/avaliacao_openmp.md`;
-- MPI: declarar que a coleta comparável permanece pendente;
+- MPI: usar a coleta conjunta comparável de 22/10/2026, com suas limitações;
 - speedup: `S(p)=Tseq/Tpar`;
 - eficiência: `E(p)=S(p)/p`;
 - variabilidade: apresentar mínimo, máximo, desvio-padrão ou CV reais.
 
 Não usar o CSV sequencial antigo como se fosse diretamente comparável a uma
 coleta feita com fonte, flags ou ambiente diferentes.
+
+Os 175 registros conjuntos estão em `resultados/issue10_desempenho.csv`; o
+ambiente em `resultados/issue10_desempenho_ambiente.txt`; os 21 SVGs em
+`resultados/graficos/`; e a interpretação em
+[analise_desempenho.md](analise_desempenho.md).
 
 ## 6:10–7:00 — Escalabilidade e Amdahl
 

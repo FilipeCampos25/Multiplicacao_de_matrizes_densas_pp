@@ -1,151 +1,62 @@
-# Avaliacao de desempenho e escalabilidade MPI
+# Avaliação de desempenho e escalabilidade MPI
 
-## Estado da avaliacao
+## Evolução do estado
 
-Este documento prepara a coleta exigida pela Issue #9, mas **nao apresenta
-resultados experimentais**. Em 21 de outubro de 2026, o host disponivel nao
-possuia compilador C/C++, implementacao/launcher MPI, Docker nem distribuicao
-WSL. Portanto, nao foi possivel compilar, validar ou executar a implementacao
-nesse ambiente. Nenhum tempo ou CSV de resultados foi inventado.
+Em 21/10/2026, a avaliação MPI estava preparada, mas o host então disponível não possuía compilador, launcher MPI, Docker ou distribuição WSL. Naquela data não havia medições MPI, e nenhuma foi inventada.
 
-O host inspecionado tinha:
+Essa pendência foi resolvida em **22/10/2026** por uma coleta conjunta no serviço Docker `pp-lab`. O arquivo `resultados/issue10_desempenho.csv` contém **175 observações**: 15 sequenciais, 80 OpenMP e 80 MPI. Antes da coleta, a suíte funcional registrou **142 PASS, 0 FAIL e 0 SKIP**. Esses registros são evidências históricas e não foram executados novamente nesta revisão.
 
-- Windows 10 Home, build 26200;
-- AMD Ryzen 5 4500, 6 nucleos e 12 processadores logicos;
-- 17.042.706.432 bytes de memoria fisica (aproximadamente 15,9 GiB);
-- `g++`, `make`, `mpic++`, `mpirun`/`mpiexec` e `docker` indisponiveis;
-- WSL habilitado, mas sem distribuicao instalada.
+Ambiente, comandos, saída da suíte e hashes estão em `resultados/issue10_desempenho_ambiente.txt`; tabelas, estatísticas e interpretação estão em [analise_desempenho.md](analise_desempenho.md).
 
-Como as medicoes devem ocorrer no ambiente oficial do projeto, esses dados do
-host servem apenas para registrar a limitacao e nao constituem um ambiente de
-benchmark.
+## Ambiente da coleta conjunta
 
-## Metodologia preparada
+A coleta ocorreu em Ubuntu 24.04 sobre WSL2/Docker, com oito CPUs lógicas expostas (Intel Core i7-4770S), GCC 13.3.0 e Open MPI 4.1.6. O launcher usado foi `mpirun --use-hwthread-cpus --bind-to hwthread`; não houve sobresubscrição nos benchmarks. MPI foi executado em uma única máquina, sem comunicação de rede entre nós.
 
-O script `scripts/benchmark_mpi.sh` compila e executa primeiro a validacao da
-Issue #5. Apenas depois de ela passar, coleta escalabilidade forte para
-N = 255, 256, 512 e 1024 e p = 1, 2, 4 e 8. N = 255 cobre distribuicoes nao
-divisiveis; os outros tres tamanhos sao os candidatos iniciais da tarefa. Cada
-configuracao recebe uma execucao de aquecimento e pelo menos cinco medicoes
-validas. Uma configuracao admite, por padrao, ate tres tentativas extras; erros
-sao registrados no CSV e nao contam como medicao valida.
+As afinidades dos runtimes OpenMP e MPI não são idênticas. Portanto, diferenças observadas não podem ser atribuídas exclusivamente ao paradigma de programação.
 
-O baseline sequencial e medido uma vez para cada N (aquecimento mais cinco
-repeticoes), pois p nao se aplica a ele. Todas as execucoes MPI sao comparadas
-ao checksum desse baseline. O script tambem grava CPU, memoria, sistema,
-compiladores, launcher e parametros em um arquivo de ambiente ao lado do CSV.
+## Metodologia executada
 
-Comando padrao, a partir da raiz do repositorio em Linux ou no Dev Container:
+Na escalabilidade forte foram usados N=256, 512 e 1024, com p=1, 2, 4 e 8 para OpenMP/MPI e uma referência sequencial por dimensão. A série fraca usou N base 256 e `N(p)=round(256 p^(1/3))`. Cada configuração teve um aquecimento, seguido de cinco medições válidas; aquecimentos não entraram no CSV.
 
-```bash
-chmod +x scripts/benchmark_mpi.sh
-./scripts/benchmark_mpi.sh 5 resultados/mpi_escalabilidade.csv
-```
+O tempo MPI começa após uma barreira e inclui `MPI_Scatterv`, `MPI_Bcast`, computação local, `MPI_Gatherv` e esperas, usando o máximo entre ranks. Alocação, inicialização, checksum, Python e partida do launcher ficam fora. Assim, o speedup MPI inclui os custos de comunicação do algoritmo, mas não toda a latência de invocação.
 
-Se o Open MPI recusar 8 processos por falta de slots, a execucao pode ser
-adaptada sem alterar o script, desde que a sobresubscricao e sua consequencia
-sejam documentadas:
-
-```bash
-MPI_RUN_ARGS=--oversubscribe ./scripts/benchmark_mpi.sh
-```
-
-Sobresubscricao nao equivale a dispor de oito nucleos fisicos e pode piorar os
-tempos; por isso, resultados obtidos assim devem ser identificados pelo arquivo
-`mpi_escalabilidade_ambiente.txt`. Dimensoes e processos tambem podem ser
-ajustados, por exemplo:
-
-```bash
-DIMENSOES="255 512 1024" PROCESSOS="1 2 4 8" ./scripts/benchmark_mpi.sh
-```
-
-O caso N = 255 complementa a coleta ao expor distribuicoes nao divisiveis por
-2, 4 e 8. Ele deve ser coletado no mesmo ambiente e na mesma sessao se for
-usado em comparacoes de desempenho.
-
-## Formato dos dados
-
-O CSV preserva os campos essenciais `implementacao`, `n`, `processos`,
-`repeticao`, `tempo_s` e `checksum`. Acrescenta `tentativa`, os quatro tempos
-de etapa, limites de linhas, `status` e `erro`. Linhas validas usam `status=ok`;
-falhas deixam as metricas vazias e guardam a saida do processo em `erro`.
-
-O script da Issue #7 existente no repositorio mede um programa OpenMP de pi,
-usa colunas `threads,repeticao,tempo_s` e nao conhece executaveis ou coletivas
-MPI. Para evitar misturar responsabilidades, ele nao foi alterado. O novo CSV
-mantem `repeticao` e `tempo_s`, mas explicita implementacao, N e processos,
-como requerido pela Issue #9 e pela futura consolidacao da Issue #10.
-
-## Interpretacao dos tempos
-
-O tempo sequencial envolve somente o nucleo de multiplicacao: inicializacao e
-checksum ficam fora da regiao medida. O tempo MPI comeca depois da
-inicializacao e de uma barreira, e termina apos `MPI_Gatherv`; portanto inclui
-`MPI_Scatterv`, `MPI_Bcast`, computacao local, `MPI_Gatherv` e esperas entre
-processos. Alocacao, inicializacao, checksum e verificacao ficam fora. Os dois
-tempos sao uteis para speedup, mas nao sao perfeitamente equivalentes: apenas
-o MPI paga distribuicao e comunicacao dentro da regiao medida.
-
-Cada processo mede as quatro etapas com `MPI_Wtime()`. Uma reducao com
-`MPI_MAX` registra o maior tempo observado entre os ranks, isto e, o caminho
-critico de cada etapa. O tempo total tambem e o maximo entre ranks. Tempos de
-coletivas podem incorporar espera por ranks atrasados; por isso, a soma dos
-maximos das etapas nao deve ser tratada como decomposicao exata do total.
-
-Para cada N e p, a analise deve usar pelo menos mediana e variacao (minimo,
-maximo e, preferencialmente, desvio-padrao). Com a mediana dos tempos:
+Para cada N e p, a análise usa a mediana como comparação principal e também preserva média, mínimo, máximo, desvio-padrão e coeficiente de variação:
 
 ```text
 S(p) = mediana(T_sequencial) / mediana(T_MPI,p)
 E(p) = S(p) / p
 ```
 
-Um aumento de p que eleve o tempo deve ser preservado e discutido, nao
-descartado. Para matrizes pequenas, latencia de coletivas, copia de dados e
-sobresubscricao podem superar a reducao da computacao local.
+Nenhum outlier foi descartado. Checksums foram comparados à execução sequencial da mesma dimensão; eles complementam, mas não substituem, a comparação elemento a elemento da suíte funcional.
 
-## Balanceamento de linhas
+## Distribuição e limites
 
-Para N linhas e p processos, cada rank recebe `floor(N/p)` linhas e os
-primeiros `N mod p` ranks recebem uma linha adicional. Assim, a diferenca entre
-o maior e o menor bloco e no maximo uma linha. Se p > N, alguns ranks recebem
-zero linhas; a implementacao fornece buffers validos com contagem zero.
+Para N linhas e p processos, cada rank recebe `floor(N/p)` linhas, e os primeiros `N mod p` ranks recebem uma linha adicional. A diferença de carga é de no máximo uma linha; se p>N, alguns ranks recebem zero linhas.
 
-Exemplos a confirmar pela saida instrumentada:
+| N | p | Distribuição esperada |
+| ---: | ---: | --- |
+| 256 | 8 | 8 ranks × 32 linhas |
+| 255 | 8 | 7 ranks × 32; 1 rank × 31 |
+| 2 | 4 | 2 ranks × 1; 2 ranks × 0 |
 
-| N | p | distribuicao esperada | diferenca |
-|---:|---:|---|---:|
-| 256 | 8 | 8 ranks x 32 linhas | 0 |
-| 255 | 8 | 7 ranks x 32; 1 rank x 31 | 1 |
-| 2 | 4 | 2 ranks x 1; 2 ranks x 0 | 1 |
+A matriz B é replicada integralmente por rank, e o rank 0 mantém A, B e C completas. A coleta conjunta não registra separadamente os tempos de cada etapa MPI, portanto não quantifica quanto de uma regressão vem de comunicação, computação ou espera. Há alta dispersão em alguns grupos, especialmente MPI com oito processos.
 
-Embora a quantidade de linhas seja equilibrada, tempos diferentes de
-computacao podem surgir por interferencia do sistema, afinidade, hierarquia de
-memoria ou ranks sem nucleo fisico exclusivo.
+## Reprodução
 
-## Escalabilidade fraca
+Para produzir uma nova coleta sem alterar os resultados históricos:
 
-A coleta preparada prioriza escalabilidade forte. Uma avaliacao fraca e
-opcional e deve ser feita separadamente. Como o trabalho e O(N^3), uma serie
-aproximada parte de N0 e usa `N(p) = round(N0 * cubert(p))`. Por exemplo, com
-N0 = 256, os valores arredondados seriam 256, 323, 406 e 512 para p = 1, 2, 4
-e 8. O arredondamento altera levemente o trabalho por processo e deve ser
-registrado; essa serie nao deve ser misturada ao CSV de escalabilidade forte
-sem uma coluna que identifique o tipo de experimento.
+```bash
+make collect-performance BENCHMARK_ARGS="--sizes 256 512 1024 \
+  --workers 1 2 4 8 --repetitions 5 --weak-base 256 \
+  --output resultados/nova_coleta.csv"
+python3 scripts/analisar_desempenho.py
+```
 
-## Checklist da Issue #9
+O coletor exige um caminho novo e cria o arquivo de ambiente correspondente. Resultados existentes não devem ser sobrescritos. O script específico `scripts/benchmark_mpi.sh` permanece disponível para uma coleta MPI com tempos por etapa; suas saídas devem ficar separadas da coleta conjunta.
 
-- [ ] Compilar e validar a implementacao no ambiente oficial.
-- [ ] Executar p = 1, 2, 4 e 8 conforme os recursos disponiveis.
-- [ ] Medir pelo menos tres dimensoes com aquecimento e cinco repeticoes.
-- [ ] Produzir e preservar `resultados/mpi_escalabilidade.csv` e o arquivo de ambiente.
-- [ ] Calcular tabela resumida, speedup, eficiencia e variacao com dados reais.
-- [ ] Interpretar os custos de `Scatterv`, `Bcast`, computacao e `Gatherv`.
-- [ ] Confirmar casos divisiveis, nao divisiveis e com processos sem linhas.
-- [x] Preparar instrumentacao por etapa, agregada pelo maximo entre ranks.
-- [x] Preparar coleta de erros, checksums e metadados do ambiente.
-- [x] Documentar a diferenca metodologica entre baseline e MPI.
-- [x] Registrar a limitacao do ambiente atual sem inventar resultados.
+## Pendências reais
 
-A Issue #9 nao deve ser considerada concluida ate os itens de execucao e
-analise baseados em dados reais serem preenchidos.
+- repetir MPI entre nós distintos para estudar custos de rede;
+- coletar etapas MPI separadas em ambiente comparável para decompor comunicação e computação;
+- repetir grupos de alta variabilidade com controle adicional de ruído e afinidade;
+- executar nova regressão e nova coleta após qualquer mudança executável.
