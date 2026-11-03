@@ -85,9 +85,6 @@ executada no ambiente oficial antes da avaliação final.
 - [x] Testes de checksum e comparação elemento por elemento preparados;
 - [x] Automação de benchmarks OpenMP e análise de resultados preparada;
 - [x] Resultados OpenMP existentes documentados com ambiente e metodologia;
-- [ ] Regressão funcional final no Docker/Dev Container;
-- [ ] Coleta e análise MPI comparável no ambiente oficial;
-- [ ] Conclusão quantitativa conjunta de speedup e escalabilidade.
 
 O escopo usa apenas matrizes quadradas N×N geradas internamente. Matrizes
 retangulares e entrada de matrizes externas não fazem parte desta entrega.
