@@ -1,90 +1,76 @@
 # Multiplicação de matrizes densas — Programação Paralela (CCO085)
 
-**IESB 2026/2 — Prof. Rodrigo Gonçalves Pinto**
+Projeto do IESB 2026/2, orientado pelo Prof. Rodrigo Gonçalves Pinto, para comparar multiplicação sequencial de matrizes densas com versões OpenMP e MPI, preservando a entrada determinística, o armazenamento row-major e a ordem `i-k-j` do código fornecido.
 
-O projeto compara a multiplicação sequencial de matrizes densas com adaptações
-OpenMP e MPI, preservando a mesma entrada determinística, o armazenamento
-row-major e a ordem de laços `i-k-j`.
+## Integrantes
+
+- Filipe de Campos Duarte — 2412130132
+- Fabrício de Campos Duarte — 2412130139
+- Davi Vinícius de Sousa Costa — 2412130133
+
+Responsabilidades e autoria: [AUTORES.md](AUTORES.md).
+
+## Organização
+
+| Caminho | Conteúdo |
+| --- | --- |
+| `codigos/baselines_sequenciais_CCO085/` | código sequencial e exemplos didáticos do professor |
+| `codigos/01_openmp/` | versões OpenMP didática e de benchmark |
+| `codigos/02_mpi/` | implementação MPI |
+| `scripts/` e `tests/` | testes, coletores e análise |
+| `resultados/` | CSVs, metadados, resumos e manifesto |
+| `resultados/graficos/` | gráficos SVG gerados |
+| `docs/` | metodologia, reprodução, auditoria e análise |
 
 ## Implementações
 
-- Baseline original: `codigos/baselines_sequenciais_CCO085/01_matmul.cpp`;
-- OpenMP didático: `codigos/01_openmp/01_matmul_openmp.cpp`;
-- OpenMP usado nos benchmarks: `codigos/01_openmp/matmul_openmp.cpp`;
-- MPI: `codigos/02_mpi/matmul_mpi.cpp`.
+- **Sequencial:** `01_matmul.cpp`, baseline original e referência matemática.
+- **OpenMP:** divide linhas de C entre threads; A e B são somente leitura e cada thread escreve em linhas exclusivas. `matmul_openmp.cpp` integra a coleta conjunta; `01_matmul_openmp.cpp` é didático.
+- **MPI:** distribui linhas de A com `MPI_Scatterv`, replica B com `MPI_Bcast` e reúne C com `MPI_Gatherv`, inclusive para `N % P != 0` e `P > N`.
 
-O baseline e os demais arquivos em `codigos/baselines_sequenciais_CCO085/`
-foram disponibilizados pelo professor e permanecem como referências originais.
-As versões paralelas, as proteções de entrada, a verificação, a instrumentação,
-os scripts e os testes são adaptações ou implementações do grupo.
+Consulte [metodologia](docs/metodologia.md) e [compilação e execução](docs/compilacao.md).
 
-## Rastreabilidade dos exemplos oficiais
-
-| Exemplo oficial | Conceito aproveitado | Aplicação no projeto |
-| --- | --- | --- |
-| `01_matmul.cpp` | Inicialização, row-major, kernel e checksum | Referência matemática das versões OpenMP e MPI |
-| `004_loop_for_paralell.cpp` | `omp parallel for` e `schedule(static)` | Distribuição do laço externo `i`, uma linha de C por iteração |
-| `005_loop_for_paralell_time.cpp` | `omp_get_wtime()`, `single` e equipe efetiva | Tempo do kernel e registro de threads realmente utilizadas |
-| `007_reduction_0.0.cpp` | Redução de acumuladores | Avaliado para o checksum, mas não adotado para preservar a ordem sequencial da soma |
-
-Os exemplos vetoriais 004, 005 e 007 fornecem conceitos de OpenMP; eles não são
-tratados como implementações prontas de multiplicação de matrizes.
-
-## Por que a paralelização é correta
-
-Cada iteração do laço externo calcula uma linha completa de C. Threads ou ranks
-diferentes escrevem em linhas distintas, enquanto A e B são somente leitura.
-Assim, não são necessários `critical`, `atomic` ou mutex no kernel. A ordem
-interna `k-j` é preservada.
-
-No MPI, `MPI_Scatterv` distribui blocos possivelmente desiguais de linhas de A,
-`MPI_Bcast` entrega B completa a todos os ranks e `MPI_Gatherv` recompõe C em
-ordem. A forma variável das coletivas cobre `N % P != 0` e ranks sem linhas
-quando `P > N`.
-
-## Ambiente oficial e comandos principais
+## Compilar, executar e validar
 
 ```bash
 docker compose build
 docker compose run --rm pp-lab
-
 make clean
 make all
-make test
-make test-correctness
-python3 -m unittest discover -s tests -v
-make benchmark-openmp-build
-```
 
-Execuções diretas:
-
-```bash
 ./bin/base/01_matmul 512
 OMP_NUM_THREADS=4 ./bin/openmp/matmul_openmp 512 --verify
 mpirun -np 4 ./bin/mpi/matmul_mpi 512 --verify
+
+make test
+make test-correctness
+python3 -m unittest discover -s tests -v
 ```
 
-Use `MATMUL_DUMP=1` somente para matrizes pequenas quando for necessário
-inspecionar C elemento por elemento. Consulte `docs/compilacao.md` para os
-comandos de benchmark e para a política de arquivos de saída.
+O registro preservado de 22/10/2026 informa **142 PASS, 0 FAIL e 0 SKIP** para baseline, OpenMP e MPI. É evidência histórica em `resultados/issue10_desempenho_ambiente.txt`, não uma execução desta revisão documental. Cobertura e tolerâncias: [testes de corretude](docs/testes_corretude.md).
 
-## Estado de validação
+## Reproduzir benchmarks
 
-Na validação mais recente, os módulos Python independentes passaram: 8 testes
-de análise, 6 do coletor OpenMP e 10 do detector de corretude. A compilação e os
-142 casos funcionais de baseline/OpenMP/MPI permaneceram bloqueados no host de
-validação, que não possuía Make, compiladores, MPI, Docker ou WSL instalado.
-Bloqueio não equivale a aprovação; a sequência completa acima ainda deve ser
-executada no ambiente oficial antes da avaliação final.
+Use nomes novos: o coletor recusa sobrescrever resultados existentes.
 
-## Estado do projeto
+```bash
+make collect-performance BENCHMARK_ARGS="--sizes 256 512 1024 \
+  --workers 1 2 4 8 --repetitions 5 --weak-base 256 \
+  --output resultados/nova_coleta.csv"
+python3 scripts/analisar_desempenho.py
 
-- [x] Baseline original identificado e preservado;
-- [x] Kernel sequencial analisado e perfilado;
-- [x] Implementações OpenMP e MPI desenvolvidas;
-- [x] Testes de checksum e comparação elemento por elemento preparados;
-- [x] Automação de benchmarks OpenMP e análise de resultados preparada;
-- [x] Resultados OpenMP existentes documentados com ambiente e metodologia;
+make benchmark-openmp BENCHMARK_ARGS="--sizes 256 512 1024 \
+  --threads 1 2 4 8 --schedules static dynamic guided \
+  --output resultados/openmp_nova_desempenho.csv"
+```
 
-O escopo usa apenas matrizes quadradas N×N geradas internamente. Matrizes
-retangulares e entrada de matrizes externas não fazem parte desta entrega.
+A coleta comparável de 22/10/2026 está em [`resultados/issue10_desempenho.csv`](resultados/issue10_desempenho.csv), com 175 observações, e seu ambiente em [`resultados/issue10_desempenho_ambiente.txt`](resultados/issue10_desempenho_ambiente.txt). CSVs derivados ficam em `resultados/`, os 21 gráficos em [`resultados/graficos/`](resultados/graficos/) e a interpretação em [análise experimental](docs/analise_desempenho.md).
+
+## Limitações e pendências
+
+- Matrizes são quadradas e geradas internamente; não há entrada externa nem dimensões retangulares.
+- MPI foi medido em uma máquina via WSL2/Docker, sem rede entre nós; B é replicada e o rank 0 mantém A, B e C completas.
+- Afinidades OpenMP/MPI não são idênticas e há alta variabilidade em alguns grupos; não há superioridade universal demonstrada.
+- A coleta conjunta não separa tempos das etapas MPI; essa decomposição permanece futura.
+- Mudanças de código exigem nova regressão: os resultados descrevem os artefatos e condições de 22/10/2026.
+- A divisão formal em `AUTORES.md` ainda requer validação explícita dos integrantes.

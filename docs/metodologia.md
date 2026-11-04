@@ -63,11 +63,17 @@ aplicável, uma redução paralela poderia mudar o arredondamento. Para matrizes
 pequenas, `MATMUL_DUMP=1` permite comparar cada elemento com uma referência
 Python independente. `--verify` recalcula os valores esperados.
 
-## Validação realizada e pendências
+## Validação e evidências preservadas
 
-Passaram no host disponível 8 testes de análise, 6 testes do coletor OpenMP e
-10 testes do detector de corretude. A regressão dos executáveis ficou bloqueada
-por ausência de Make, GCC, MPI, Docker e WSL; os 142 casos funcionais não foram
-aprovados nem ignorados. Ainda são necessários, no ambiente oficial, build
-limpo, suíte funcional, casos de argumentos inválidos e smoke benchmark em
-arquivo novo.
+Uma validação anterior, em host sem toolchain, aprovou apenas 8 testes de
+análise, 6 do coletor OpenMP e 10 do detector de corretude; naquela ocasião, os
+casos funcionais ficaram bloqueados. A pendência foi resolvida em 22/10/2026 no
+serviço Docker `pp-lab`: o registro preservado informa **142 PASS, 0 FAIL e 0
+SKIP**, antes da coleta conjunta de **175 observações**.
+
+Esses números são históricos e não foram reexecutados nesta atualização. Saída,
+ambiente, versões e hashes estão em
+`resultados/issue10_desempenho_ambiente.txt`; dados e interpretação estão em
+`resultados/issue10_desempenho.csv` e
+[analise_desempenho.md](analise_desempenho.md). Alterações futuras de código
+devem ser validadas novamente em arquivo de coleta novo.

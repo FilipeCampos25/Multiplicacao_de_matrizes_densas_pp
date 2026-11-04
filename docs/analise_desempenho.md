@@ -228,6 +228,16 @@ não descreve custos variáveis de memória/comunicação ou regressão MPI entr
 p=4/8. Também prevê S(1)=1, enquanto implementações distintas e ruído podem
 produzir outro valor. Não se aplica diretamente à série fraca, cujo problema cresce.
 
+Os dados atuais também não permitem estimar defensavelmente uma única fração
+serial. Inverter Amdahl para cada speedup produziria uma "fração efetiva" que
+absorve comunicação MPI, criação/sincronização OpenMP, contenção de memória,
+SMT, diferenças de código e ruído; a regressão MPI entre p=4 e p=8 viola ainda
+mais a hipótese de overhead constante. Para estimar a fração paralelizável seriam
+necessários tempos medidos, no mesmo executável e ambiente, para regiões
+intrinsecamente seriais e paralelizáveis, além de repetições e controle de
+overheads. Por isso, preservam-se apenas as curvas hipotéticas, sem speedup máximo
+estimado a partir dos resultados atuais.
+
 ## 10. Gargalos possíveis e limitações
 
 Os vetores são contíguos row-major; i-k-j reutiliza A[i,k] e percorre linhas
@@ -246,7 +256,9 @@ Scatterv/Bcast/Gatherv e esperas entram no total. Na série fraca, N=323/p=2
 distribui 162/161 linhas e N=406/p=4 distribui 102/102/101/101; os casos fortes
 são divisíveis. Equilíbrio de linhas não garante igualdade de tempo. A coleta
 conjunta não registra etapas MPI separadamente: não quantificamos quanto da
-regressão é comunicação. O benchmark MPI anterior permite essa investigação futura.
+regressão é comunicação. O executável e `benchmark_mpi.sh` já possuem a
+instrumentação necessária; a coleta complementar permanece pendente porque o
+host desta revisão não possui MPI, compilador C++, Docker ou distribuição WSL.
 
 Cinco repetições, virtualização compartilhada, saída com resolução de
 microssegundos, ausência de intervalos de confiança e afinidades diferentes
@@ -288,6 +300,22 @@ recalculados sem alterar brutos. Este documento é uma fotografia da coleta
 `issue10_desempenho.csv`; atualize tabelas e discussão ao relatar novas coletas,
 sem substituir silenciosamente sua procedência.
 
+Para perfilamento por trechos e etapas MPI, sem recriar os 21 SVGs:
+
+```bash
+python3 scripts/coletar_perfil_sequencial.py --sizes 256 512 1024 \
+  --repetitions 5 --output resultados/perfil_sequencial_complementar.csv
+DIMENSOES="256 512 1024" PROCESSOS="1 2 4 8" \
+  bash scripts/benchmark_mpi.sh 5 resultados/mpi_etapas_complementar.csv
+python3 scripts/analisar_complementacao.py \
+  --sequencial resultados/perfil_sequencial_complementar.csv \
+  --mpi resultados/mpi_etapas_complementar.csv \
+  --output-dir resultados/complementacao_marco2
+```
+
+Esses comandos exigem destinos inéditos. Nesta revisão eles não foram executados
+por ausência das ferramentas requeridas; não há novos resultados experimentais.
+
 ```bash
 docker compose run --rm pp-lab python3 -m unittest discover -s tests -p test_analisar_desempenho.py -v
 ```
@@ -312,7 +340,7 @@ conclusões locais, sem prova de causa dos gargalos ou superioridade geral.
 | 9. Amdahl | Concluído: três cenários hipotéticos e discussão de limites |
 | 10. Gráficos | Concluído: cinco categorias, SVGs e históricos separados |
 | 11. CSVs | Concluído: consolidado, métricas e fraca reproduzíveis |
-| 12. Gargalos | Concluído como discussão de hipóteses; perfilamento específico não realizado |
+| 12. Gargalos | Discussão medida/hipótese preservada; perfilamento específico preparado, mas não executado neste host |
 | 13. Documento | Concluído: tabelas, gráficos, metodologia e limites |
 | 14. Integração | Concluído: alvos distintos de análise e coleta |
 | 15. Ausências | MPI medido; lacunas históricas preservadas sem referência artificial |

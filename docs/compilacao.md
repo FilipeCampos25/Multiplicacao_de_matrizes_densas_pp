@@ -158,11 +158,15 @@ docker compose run --rm -e OMP_NUM_THREADS=4 pp-lab ./bin/openmp/01_matmul_openm
 docker compose run --rm pp-lab ./bin/openmp/01_matmul_openmp 128 2
 ```
 
-## Estado da última validação
+## Estado das validações registradas
 
-Passaram 8 testes de análise, 6 testes do coletor OpenMP e 10 testes do detector
-de corretude. Os comandos `make clean`, `make all`, `make test`,
-`make test-correctness`, a descoberta completa, o build das variantes e o smoke
-benchmark permaneceram bloqueados no host disponível por ausência de Make,
-compiladores, MPI, Docker e WSL. Esses comandos ainda precisam terminar com
-sucesso no ambiente oficial; casos bloqueados não são considerados aprovados.
+Em uma validação anterior, o host sem Make, compiladores, MPI, Docker ou WSL
+permitiu executar apenas testes Python independentes; os casos funcionais
+ficaram bloqueados. Em 22/10/2026, essa pendência foi resolvida no serviço
+Docker `pp-lab`: a suíte registrada antes da coleta conjunta terminou com
+**142 PASS, 0 FAIL e 0 SKIP**, e a coleta produziu **175 observações**.
+
+Trata-se de evidência histórica, não de execução desta revisão documental.
+Consulte `resultados/issue10_desempenho_ambiente.txt` para saída, ambiente e
+hashes. Para validar a versão corrente após qualquer alteração executável,
+repita os comandos desta página e grave benchmarks em caminhos novos.

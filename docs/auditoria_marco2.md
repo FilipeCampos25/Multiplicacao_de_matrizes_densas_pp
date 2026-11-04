@@ -4,6 +4,14 @@ Data da auditoria: 21 de outubro de 2026. Branch de trabalho:
 `issue-12-integracao-final`. A Issue #12 permanece condicionada à execução no
 ambiente oficial e aos resultados das Issues #8 e #9.
 
+> **Nota retrospectiva (03/11/2026):** este documento preserva a fotografia da
+> auditoria de 21/10/2026. As pendências de execução e de dados comparáveis foram
+> resolvidas posteriormente pela coleta conjunta de 22/10/2026: 175 observações
+> sequenciais/OpenMP/MPI, 142 testes de corretude aprovados e 21 gráficos. As
+> evidências estão em `resultados/issue10_desempenho.csv`, no arquivo de ambiente
+> correspondente e em [analise_desempenho.md](analise_desempenho.md). As frases
+> abaixo no presente histórico não descrevem o estado atual do repositório.
+
 ## Resultado executivo
 
 O repositório possui baseline preservado, implementações OpenMP e MPI,
@@ -42,9 +50,9 @@ declarado pronto até a conclusão dos itens bloqueados abaixo.
 - Decidir se o PDF pessoal localizado dentro da pasta do baseline faz parte da
   entrega. Ele parece alheio ao projeto e contém nome pessoal; revisar e remover
   do Git antes de publicar se não houver justificativa acadêmica.
-- Revisar os documentos vazios herdados (`architecture.md`,
-  `design_philosoply.md`, `development.md`, `orchestration.md`) e remover ou
-  preencher em tarefa própria para evitar links/entregáveis sem conteúdo.
+- Revisar documentos vazios herdados. Resolvido em 03/11/2026: `architecture.md`
+  tinha conteúdo útil e foi preservado; `design_philosoply.md`, `development.md`
+  e `orchestration.md`, vazios e sem referências válidas, foram removidos.
 
 ## Bloqueios de comprovação
 
