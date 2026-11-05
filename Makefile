@@ -63,7 +63,7 @@ $(BIN_DIR)/openmp/%: $(OPENMP_DIR)/%.cpp
 
 $(BIN_DIR)/mpi/%: $(MPI_DIR)/%.cpp
 	@mkdir -p $(@D)
-	$(MPICXX) $(CXXFLAGS) -o $@ $< $(LDLIBS)
+	$(MPICXX) $(CXXFLAGS) -DOMPI_SKIP_MPICXX -o $@ $< $(LDLIBS)
 
 clean:
 	rm -rf $(BIN_DIR)
