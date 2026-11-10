@@ -1,20 +1,22 @@
 # Autores e contribuições
 
-## Integrantes e responsabilidades formais
+## Integrantes e divisão proposta
 
-| Integrante | Matrícula | Responsabilidade principal proposta |
+| Integrante | Matrícula | Responsabilidade principal proposta pela equipe |
 | --- | --- | --- |
 | Filipe de Campos Duarte | 2412130132 | implementação MPI e integração final |
 | Fabrício de Campos Duarte | 2412130139 | OpenMP, testes de corretude e análise experimental |
 | Davi Vinícius de Sousa Costa | 2412130133 | baseline, perfilamento, scripts de benchmark e documentação |
 
-**Validação pendente:** a tabela registra a divisão formal informada para o trabalho. O histórico sustenta atividades compatíveis, mas não comprova sozinho um acordo interno completo nem exclusividade. Os três integrantes devem validá-la antes da entrega.
+**Confirmação humana pendente:** a tabela registra a divisão informada para o trabalho. O histórico sustenta atividades compatíveis, mas não comprova sozinho um acordo interno completo, aprovação formal dos três ou exclusividade. Os três integrantes devem confirmá-la antes da entrega.
 
 ## Contribuições adicionais sustentadas pelo histórico
 
 - **Filipe:** implementação MPI e testes iniciais (PR #15), instrumentação MPI (PR #17), integração das implementações, testes, análise e documentação (PR #19), além de ajustes posteriores.
 - **Fabrício:** commits das Issues #4, #6, #8 e #10 adicionaram OpenMP, suíte de corretude, coleta OpenMP e consolidação experimental com CSVs, gráficos e análise. Aparecem sob `Fabricio2407` e `FabricioCampos`, com o mesmo e-mail registrado.
 - **Davi:** commits de `davivcosta` documentaram perfilamento e ambiente sequencial, adaptaram o benchmark e a coleta CSV e registraram metodologia, referências e documentação.
+
+Na auditoria de 10/11/2026, `git shortlog -sne --all` apresentou 30 commits sob a identidade de Filipe, 12 sob as duas identidades de Fabrício (mesmo e-mail) e 3 sob a identidade de Davi. Essas contagens incluem merges e não medem esforço, relevância ou aprovação da divisão proposta.
 
 Commits de merge ou revisão não provam autoria exclusiva do conteúdo incorporado. Atividades coletivas sem evidência individual suficiente permanecem atribuídas ao grupo.
 

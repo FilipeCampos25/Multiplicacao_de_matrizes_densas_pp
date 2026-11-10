@@ -1,90 +1,65 @@
 # Checklist final de entrega — Marco 2
 
-Auditoria realizada em **03/11/2026**, na branch
-`task2/complementacao-experimental-marco2`, revisão `eae1ac9`. “Concluído”
-significa comprovado por inspeção ou evidência reproduzível; não significa que
-os executáveis atuais foram validados neste host.
+Auditoria atualizada em **10/11/2026** na branch
+`fix/ajustes-finais-marco2`, após os commits `b558803`, `e388003` e `06d9b88`.
+As classificações abaixo distinguem evidência histórica, inspeção da revisão atual
+e validação executada neste host. “Concluído com evidência” não significa que uma
+medição histórica foi repetida no código atual.
 
-| Requisito do professor | Status | Arquivo ou evidência | Validação realizada em 03/11/2026 | Ação manual necessária |
-| --- | --- | --- | --- | --- |
-| Baseline sequencial fornecido | concluído | `codigos/baselines_sequenciais_CCO085/01_matmul.cpp` | Presença, histórico e SHA-256 conferidos; hash atual `af87…507a` coincide com o registro de 22/10 | Confirmar licença/atribuição exigida pela disciplina |
-| Implementações OpenMP | parcial | `codigos/01_openmp/*.cpp` | Duas fontes presentes e integração no Makefile inspecionada; não compiladas neste host | Compilar e executar a revisão atual no contêiner |
-| Implementação MPI | parcial | `codigos/02_mpi/matmul_mpi.cpp` | Fonte, `Scatterv/Bcast/Gatherv` e casos irregulares inspecionados; não compilada | Compilar e executar com 1/2/4 processos |
-| Makefile | parcial | `Makefile` | Alvos esperados presentes; execução bloqueada por ausência de `make` | Executar todos os alvos obrigatórios em Linux/contêiner |
-| Scripts de benchmark | concluído | `scripts/benchmark_openmp.py`, `benchmark_mpi.sh`, `coletar_desempenho.py` | Presença, separação coleta/análise e proteção contra sobrescrita inspecionadas | Fazer ensaio final dos comandos da demonstração |
-| CSVs de resultados | concluído | `resultados/*.csv`, `analise_manifesto.json` | 175 linhas na coleta conjunta (15 seq., 80 OpenMP, 80 MPI), todas `status=ok`; manifesto registra 435 observações consolidadas | Preservar brutos e metadados sem regravar |
-| Gráficos de tempo, speedup e eficiência | concluído | `resultados/graficos/` | 21 SVGs presentes; teste de artefatos/procedência passou; links locais conferidos | Abrir os SVGs no ambiente da apresentação |
-| Escalabilidade forte | concluído | `metricas_desempenho.csv`, `docs/analise_desempenho.md` | N=256/512/1024 e 1/2/4/8 trabalhadores conferidos na evidência histórica | Repetir somente se os resultados forem atribuídos aos fontes atuais |
-| Escalabilidade fraca | concluído | `escalabilidade_fraca.csv` | Oito grupos e fórmula cúbica documentados; série separada da forte | Explicar arredondamento de N e limites na apresentação |
-| Lei de Amdahl | concluído | `docs/analise_desempenho.md`, gráficos `amdahl_*` | Fórmula e três cenários hipotéticos conferidos; documento não os trata como ajuste medido | Não declarar fração serial estimada |
-| README e compilação | concluído | `README.md`, `docs/compilacao.md` | Caminhos e comandos cruzados com Makefile | Atualizar qualquer saída somente após nova validação |
-| Autoria | parcial | `AUTORES.md`, histórico Git | Três integrantes e contribuições históricas documentados; 24 commits Filipe, 11 Fabricio (duas identidades, mesmo e-mail), 3 Davi | Os três integrantes devem validar a divisão formal |
-| Corretude e metodologia | parcial | `docs/testes_corretude.md`, `docs/metodologia.md`, registro de ambiente | Método de comparação e tolerâncias documentados; 142 PASS são de 22/10 | Reexecutar após as mudanças posteriores aos hashes registrados |
-| Demonstração até 9 minutos | parcial | `docs/demonstracao.md` | Roteiro revisado com comandos reais, tempos e contingência | Ensaio cronometrado no ambiente oficial |
-| Preparação para arguição cruzada | concluído | `docs/arguicao.md` | Conceitos sequencial/OpenMP/MPI, corretude, métricas e limites cobertos | Cada integrante deve praticar todas as três versões |
-| Higiene do repositório | parcial | `.gitignore`, `git ls-files`, `git status --ignored` | Nenhum binário, objeto, cache, PDF, chave ou arquivo >1 MiB rastreado; caches ignorados encontrados | Remover temporários locais antes de empacotar; decidir sobre os dois `.cpp` não rastreados |
+| Requisito | Classificação | Arquivo ou resultado que fundamenta a classificação | Limite ou pendência |
+| --- | --- | --- | --- |
+| Baseline original | **Concluído com evidência** | `codigos/baselines_sequenciais_CCO085/01_matmul.cpp`; `docs/architecture.md`; hash preservado conforme auditoria anterior | Manter atribuição ao professor e não confundir os dois `.cpp` locais não rastreados com material confirmado |
+| Perfilamento e hotspots | **Parcialmente concluído** | `docs/perfilamento_sequencial.md`; `codigos/instrumentacao/01_matmul_perfil.cpp`; `scripts/coletar_perfil_sequencial.py` | Instrumentação e protocolo existem, mas não há coleta quantitativa por etapa; o kernel `O(N³)` é hotspot fundamentado por complexidade, não por nova medição |
+| Fração paralelizável e Lei de Amdahl | **Parcialmente concluído** | `docs/analise_desempenho.md`, seção 9; `resultados/metricas_desempenho.csv`; `resultados/graficos/amdahl_*.svg` | Há estimativa efetiva invertida de speedup histórico e cenários teóricos; falta fração por etapas medida e a inferência incorpora overheads |
+| OpenMP e condições de corrida | **Concluído com evidência** | `codigos/01_openmp/*.cpp`; `docs/metodologia.md`; `docs/avaliacao_openmp.md`; testes históricos de 05/11 no `README.md` | A inspeção confirma divisão por linhas e escritas disjuntas; os testes não foram repetidos neste host |
+| MPI, decomposição e coletivas | **Concluído com evidência** | `codigos/02_mpi/matmul_mpi.cpp`; `docs/escalabilidade_mpi.md`; uso de `Scatterv`, `Bcast` e `Gatherv`; testes históricos de casos irregulares | Validação atual bloqueada por ausência de toolchain |
+| Corretude | **Parcialmente concluído** | `tests/test_correctness.py`; `tests/test_correctness_harness.py`; `docs/testes_corretude.md`; registro histórico `142 PASS` em 05/11 | Os hashes/fontes atuais são posteriores à coleta histórica; é necessária reexecução limpa dos testes obrigatórios |
+| Speedup e eficiência | **Concluído com evidência** | `resultados/metricas_desempenho.csv`; `docs/analise_desempenho.md`; gráficos `speedup_*` e `eficiencia_*` | Resultados pertencem à coleta histórica de 22/10, não às fontes atuais |
+| Escalabilidade forte | **Concluído com evidência** | `resultados/issue10_desempenho.csv`; `resultados/metricas_desempenho.csv`; `docs/analise_desempenho.md` | Evidência histórica em máquina única/Docker |
+| Escalabilidade fraca | **Concluído com evidência** | `resultados/escalabilidade_fraca.csv`; gráfico `fraca_*`; metodologia cúbica em `docs/analise_desempenho.md` | Explicar arredondamento de N e limites experimentais |
+| Overhead de comunicação MPI | **Parcialmente concluído** | `docs/escalabilidade_mpi.md`; `docs/analise_desempenho.md`; `scripts/benchmark_mpi.sh`; `resultados/mpi_etapas_complementar_bloqueio_2026-11-10.txt` | Instrumentação por etapas foi preparada, mas a coleta foi bloqueada; não há quantificação experimental separada de comunicação |
+| Gráficos e resultados | **Concluído com evidência** | `resultados/graficos/` (21 SVGs); `resultados/analise_manifesto.json`; teste de procedência de artefatos | Preservar dados históricos e não apresentá-los como coleta atual |
+| Makefile e Docker | **Parcialmente concluído** | `Makefile`, `Dockerfile`, `docker-compose.yml`, `docs/compilacao.md`; comandos cruzados por inspeção | Docker/Make não estão disponíveis neste host; validação limpa atual não foi executada |
+| Scripts e CSVs | **Concluído com evidência** | scripts de coleta, benchmark e análise; `resultados/*.csv` | Nova instrumentação de perfil/MPI ainda carece de execução no ambiente oficial |
+| README | **Concluído com evidência** | `README.md`; comandos e caminhos conferidos com o `Makefile`; medições históricas separadas da auditoria atual | Revalidar comandos em Docker antes da entrega |
+| Autoria | **Parcialmente concluído** | `AUTORES.md`; `git shortlog -sne --all`; commits e PRs citados no documento | A divisão proposta precisa de confirmação humana dos três integrantes; o Git não prova acordo interno nem exclusividade |
+| Demonstração e arguição | **Parcialmente concluído** | `docs/demonstracao.md`; `docs/arguicao.md` | Falta ensaio cronometrado e confirmação de preparação individual |
+| Higiene e escopo da branch | **Parcialmente concluído** | `git diff main...HEAD` contém somente complementações de perfilamento, Amdahl, MPI e auditoria | Há dois `.cpp` não rastreados na pasta do professor; origem e destino precisam de decisão humana e eles não integram o commit |
 
-## Validação executada agora
+## Validação de integração de 10/11/2026
 
-Host: Windows, PowerShell, Python 3.12. Não estavam disponíveis `make`, `g++`,
-`mpic++`, `mpirun`, Docker ou Bash. `python3` era apenas o alias inoperante da
-Microsoft Store.
+Host: Windows/PowerShell. Não estão disponíveis `make`, `g++`, `mpic++`,
+`mpirun`, Bash ou Docker; `python3` é um alias inoperante da Microsoft Store.
+Assim, não foi possível criar um checkout limpo funcional nem usar o ambiente
+Docker documentado.
 
-| Comando solicitado | Resultado de 03/11/2026 |
+| Comando solicitado | Resultado observado |
 | --- | --- |
-| `make clean` | bloqueado: `make` ausente |
-| `make all` | bloqueado: `make` ausente |
-| `make test` | bloqueado: `make` e Bash ausentes |
-| `make test-correctness` | bloqueado: `make`; binários não existem |
-| `python3 -m unittest discover -s tests -v` | bloqueado: alias `python3` sem interpretador |
-| `python -m unittest discover -s tests -v` | executou 167 testes: 142 falharam por executáveis ausentes e 18 deram erro de permissão em temporários; 7 passaram; não é aprovação |
-| `make benchmark-openmp-build` | bloqueado: `make` e `g++` ausentes |
-| Execuções manuais baseline/OpenMP/MPI | bloqueadas: binários e toolchains ausentes |
+| `make clean` | Bloqueado: `make` ausente |
+| `make all` | Bloqueado: `make` ausente |
+| `make test` | Bloqueado: `make` e Bash ausentes |
+| `make test-correctness` | Bloqueado: `make`, compiladores e binários ausentes |
+| `python3 -m unittest discover -s tests -v` | Bloqueado: alias `python3` sem interpretador |
+| `python -m unittest discover -s tests -v` | Diagnóstico alternativo: 168 testes; 7 aprovações, 142 falhas por executáveis ausentes e 19 erros, sobretudo por permissão em temporários. Resultado global: **FAILED** |
 
-Uma segunda tentativa dos testes Python, apontando temporários para o workspace,
-continuou bloqueada pela política de escrita do sandbox: 25 testes, 18 erros de
-permissão e 7 aprovações. Separadamente, o teste somente de leitura
-`RepositoryArtifactsTests.test_real_statistics_provenance_and_graphs` passou.
+O registro de 05/11/2026 no `README.md` (build, 142 casos funcionais e 167
+testes gerais aprovados) permanece como evidência histórica. Ele não deve ser
+usado para afirmar que esta revisão foi validada, porque os três commits de
+complementação são posteriores.
 
-## Integridade e divergências encontradas
+## Parecer de prontidão
 
-- A coleta de 22/10 registra GCC 13.3.0, Open MPI 4.1.6, Ubuntu 24.04 em
-  WSL2/Docker, i7-4770S e oito CPUs lógicas. Registra 175 medições válidas e
-  `142 PASS, 0 FAIL, 0 SKIP` naquela data.
-- O hash atual do baseline coincide com o registrado. Os hashes atuais do
-  Makefile, OpenMP e MPI **não coincidem** com os da coleta. Logo, CSVs e
-  gráficos permanecem íntegros como resultados históricos, mas não validam os
-  executáveis atuais.
-- `metricas_desempenho.csv` não apresentou divergência em `E=S/p` dentro de
-  `1e-6`. A procedência e correspondência dos gráficos também são cobertas pelo
-  teste de artefatos aprovado.
-- Foram encontrados 21 SVGs e nenhum link Markdown local quebrado nos arquivos
-  rastreados. `docs/auditoria_marco2.md` é uma fotografia antiga de 21/10 e sua
-  nota retrospectiva deve ser respeitada; não usar suas pendências antigas como
-  estado atual.
-- `benchmarks_automatizados.csv` e `baseline_sequencial.csv` são históricos
-  isolados e não devem ser combinados como referência comparável à coleta
-  conjunta.
-- Não há arquivo rastreado maior que 1 MiB nem binário/objeto/cache/documento
-  pessoal rastreado. Existem dois fontes não rastreados na pasta do professor;
-  a equipe precisa decidir sua origem e inclusão sem atribuí-los ao professor
-  automaticamente.
+O Marco 2 está **bem coberto documentalmente, porém não pronto para declaração
+de conformidade integral**. Antes da entrega, permanecem necessárias:
 
-## Parecer e ações bloqueantes
+1. reexecução, em checkout limpo e no Docker oficial, dos cinco comandos
+   obrigatórios e arquivamento da saída com o hash do commit;
+2. coleta quantitativa do perfil sequencial por etapas;
+3. coleta MPI por etapas para quantificar comunicação, ou apresentação explícita
+   desse item como limitação;
+4. confirmação humana da divisão de autoria pelos três integrantes;
+5. decisão documentada sobre os dois fontes não rastreados;
+6. ensaio da demonstração em até nove minutos.
 
-O Marco 2 está **documental e experimentalmente bem coberto, mas parcialmente
-validado na revisão atual**. Antes da entrega, a equipe deve:
-
-1. executar, em checkout limpo do commit candidato e no contêiner oficial,
-   `make clean`, `make all`, `make test`, `make test-correctness`,
-   `python3 -m unittest discover -s tests -v` e
-   `make benchmark-openmp-build`;
-2. executar manualmente baseline, OpenMP (1 e 4 threads) e MPI (1 e 4 ranks),
-   comparar dumps/checksums e arquivar saída, commit, hashes e ambiente;
-3. confirmar `AUTORES.md` com os três integrantes;
-4. resolver os dois `.cpp` não rastreados e limpar caches/temporários locais;
-5. ensaiar `docs/demonstracao.md` em até nove minutos.
-
-Não é necessário alterar os resultados de 22/10. Se a equipe quiser afirmar
-desempenho dos fontes atuais, deve produzir uma coleta nova, com outro nome e
-metadados completos.
+Não é necessário sobrescrever os resultados históricos. Qualquer nova coleta
+deve usar outro nome e registrar ambiente, commit e parâmetros.
