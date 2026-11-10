@@ -79,12 +79,23 @@ bash scripts/benchmark_mpi.sh 5 resultados/mpi_etapas_complementar.csv
 
 python3 scripts/analisar_complementacao.py \
   --mpi resultados/mpi_etapas_complementar.csv \
+  --expected-sizes 256 512 1024 \
+  --expected-processes 1 2 4 8 --minimum-repetitions 5 \
   --output-dir resultados/complementacao_marco2
 ```
+
+O analisador valida a presença das 12 configurações, ao menos cinco repetições
+válidas, identificadores de repetição únicos e os extremos de carga esperados.
+Ele produz `etapas_mpi_resumo.csv` e `configuracoes_mpi_resumo.csv`, com medianas,
+speedup/eficiência relativos a p=1 e um proxy de comunicação explicitamente
+marcado como não aditivo.
 
 O resumo produzido contém medianas e razões etapa/tempo total para cada N e p.
 Essas razões ajudam a comparar configurações, mas não formam uma decomposição
 aditiva: o máximo de cada etapa pode pertencer a ranks diferentes, e uma coletiva
 inclui espera causada por desbalanceamento anterior. Neste host não havia
 `mpic++`, `mpirun`, Docker ou distribuição WSL, então a coleta complementar não
-foi executada e o CSV histórico permaneceu intacto.
+foi executada e o CSV histórico permaneceu intacto. A nova tentativa de
+**10/11/2026** confirmou o mesmo bloqueio; o diagnóstico está em
+`resultados/mpi_etapas_complementar_bloqueio_2026-11-10.txt`. Portanto, a análise
+quantitativa por etapa continua pendente e nenhum gráfico de etapas foi gerado.

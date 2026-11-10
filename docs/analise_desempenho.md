@@ -374,11 +374,27 @@ DIMENSOES="256 512 1024" PROCESSOS="1 2 4 8" \
 python3 scripts/analisar_complementacao.py \
   --sequencial resultados/perfil_sequencial_complementar.csv \
   --mpi resultados/mpi_etapas_complementar.csv \
+  --expected-sizes 256 512 1024 \
+  --expected-processes 1 2 4 8 --minimum-repetitions 5 \
   --output-dir resultados/complementacao_marco2
 ```
 
 Esses comandos exigem destinos inéditos. Nesta revisão eles não foram executados
 por ausência das ferramentas requeridas; não há novos resultados experimentais.
+Uma nova verificação em 10/11/2026 encontrou Python 3.12, mas não encontrou
+`mpirun`, `mpiexec`, `mpic++`, `g++` ou Docker; o WSL está presente apenas como
+componente do Windows e informa que não há distribuição instalada. O registro
+está em `resultados/mpi_etapas_complementar_bloqueio_2026-11-10.txt`.
+
+O analisador complementar agora rejeita colunas ausentes, configurações ou
+repetições incompletas, repetições duplicadas e cargas incompatíveis com a
+decomposição de linhas. Além da tabela por etapa, gera uma tabela por configuração
+com speedup relativo a p=1 e `comunicacao_proxy_nao_aditiva_s`. Esse último campo
+é somente a soma descritiva das medianas de `Scatterv`, `Bcast` e `Gatherv`: não é
+o tempo real de comunicação nem pode ser somado à computação para reconstruir o
+total, pois cada máximo pode vir de um rank diferente e coletivas incluem espera.
+Sem dados novos, não há fundamento para preencher tabelas quantitativas ou gerar
+gráficos de comunicação versus processos nesta revisão.
 
 ```bash
 docker compose run --rm pp-lab python3 -m unittest discover -s tests -p test_analisar_desempenho.py -v

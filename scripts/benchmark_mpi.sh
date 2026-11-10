@@ -15,6 +15,11 @@ MAX_TENTATIVAS="${MAX_TENTATIVAS:-$((REPETICOES + 3))}"
 BASE_BIN="${BASE_BIN:-./bin/base/01_matmul}"
 MPI_BIN="${MPI_BIN:-./bin/mpi/matmul_mpi}"
 
+if [[ -e "$SAIDA" || -e "${SAIDA%.csv}_ambiente.txt" ]]; then
+    echo "Erro: destino ja existe; use nomes novos para preservar coletas anteriores: $SAIDA" >&2
+    exit 2
+fi
+
 if ! [[ "$REPETICOES" =~ ^[1-9][0-9]*$ ]] ||
    ! [[ "$MAX_TENTATIVAS" =~ ^[1-9][0-9]*$ ]] ||
    (( MAX_TENTATIVAS < REPETICOES )); then
