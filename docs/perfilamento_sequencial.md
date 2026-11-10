@@ -1,68 +1,94 @@
-# Perfilamento do Algoritmo Sequencial (Baseline)
+# Perfilamento do algoritmo sequencial
 
-## 1. Ambiente de Execução
-Para garantir a reprodutibilidade dos experimentos, os testes foram executados no seguinte ambiente de hardware e software:
-* **Processador (CPU):** AMD Ryzen 5 3400G (3.70 GHz)
-* **Memória RAM:** 8,00 GB (2666 MT/s)
-* **Sistema Operacional / Terminal:** Windows (execução via MINGW64, sem uso de container Docker nesta etapa)
-* **Compilador:** g++ (GCC)
-* **Flags de compilação:** `-O2` (Otimização de nível 2)
+## Evidência histórica
 
-## 2. Metodologia
-O código original do professor (`01_matmul.cpp`) foi utilizado sem qualquer alteração. O programa realiza a multiplicação de duas matrizes densas $N \times N$ gerando uma matriz resultante $C$. 
+O baseline original do professor (`codigos/baselines_sequenciais_CCO085/01_matmul.cpp`)
+permanece inalterado. O arquivo histórico `resultados/baseline_sequencial.csv` contém
+cinco execuções para cada dimensão, realizadas em Windows/MINGW64, com GCC `-O2`,
+em um AMD Ryzen 5 3400G com 8 GB de RAM. Esses dados medem somente a região da
+multiplicação:
 
-As dimensões escolhidas para o benchmark foram $N = 256$, $N = 512$ e $N = 1024$. Para cada dimensão, o executável foi rodado 5 vezes para isolar oscilações do sistema operacional. O tempo de execução e o *checksum* determinístico foram registrados.
+| N | Checksum | Média (s) | Mediana (s) | Mínimo–máximo (s) |
+|---:|---:|---:|---:|---:|
+| 256 | 4109165.296000 | 0.004799 | 0.004798 | 0.004777–0.004832 |
+| 512 | 32883431.310401 | 0.048124 | 0.049412 | 0.040243–0.055978 |
+| 1024 | 263088437.159955 | 0.546761 | 0.542017 | 0.536388–0.566012 |
 
-## 3. Resultados Obtidos
-Abaixo estão os cálculos de média, mediana e variação extraídos das 5 repetições registradas em `resultados/baseline_sequencial.csv`:
+Esses valores não separam alocação, inicialização e checksum. Portanto, não são
+evidência quantitativa de perfilamento por etapa e não permitem calcular a
+participação percentual real de cada trecho.
 
-| Dimensão (N) | Checksum | Tempo Médio | Tempo Mediano | Variação (Mín - Máx) |
-| :--- | :--- | :--- | :--- | :--- |
-| **256** | 4109165.296000 | 0.004799 s | 0.004798 s | 0.004777 s – 0.004832 s |
-| **512** | 32883431.310401 | 0.048124 s | 0.049412 s | 0.040243 s – 0.055978 s |
-| **1024** | 263088437.159955 | 0.546761 s | 0.542017 s | 0.536388 s – 0.566012 s |
+## Instrumentação e preservação do algoritmo
 
-*A mediana foi escolhida como métrica de referência principal, pois é menos sensível a eventuais picos de atraso causados por processos em segundo plano no Windows.*
+A cópia `codigos/instrumentacao/01_matmul_perfil.cpp` mede separadamente alocação,
+inicialização, multiplicação e checksum. Ela preserva as fórmulas de inicialização,
+a inicialização de `C` com zero e a ordem de laços `i-k-j` do baseline. O coletor
+compila o baseline e a cópia instrumentada com as mesmas flags e compara o checksum
+de cada aquecimento e repetição com o baseline da mesma dimensão. Uma divergência
+encerra a coleta sem publicar o CSV.
 
-## 4. Limite das evidências históricas
+## Metodologia de coleta preparada
 
-Os tempos acima medem somente a região de multiplicação delimitada pelo código
-original. Eles não separam alocação, inicialização e checksum e, portanto, **não
-constituem perfilamento de hotspots por trecho**. A inspeção dos três laços e a
-complexidade O(N³) indicam onde se espera maior trabalho, mas não são tempos
-medidos nem permitem publicar uma participação percentual real.
+- Dimensões: `N=256`, `512` e `1024`.
+- Um aquecimento separado por dimensão, excluído do CSV.
+- Cinco repetições medidas por dimensão.
+- Compilação: `g++ -O2 -std=c++17 -Wall -Wextra -Wpedantic -lm`.
+- Relógio monotônico (`CLOCK_MONOTONIC`).
+- Registro de plataforma, processador, CPUs lógicas, compilador, flags, intervalo
+  UTC, hashes SHA-256 das fontes e checksums esperados.
+- Resumo por etapa com média, mediana, desvio-padrão amostral, mínimo, máximo e
+  participação da mediana da etapa no tempo total mediano.
 
-O algoritmo utiliza uma **ordem de laços i-k-j**. Isso foi projetado especificamente para otimizar os acessos à memória:
-1. Ao invés da tradicional abordagem `i-j-k`, que causaria saltos na memória (gerando muitos *cache misses* ao ler colunas de forma vertical), a ordem `i-k-j` navega de forma sequencial nos vetores contíguos alocados na memória.
-2. A leitura sequencial maximiza a localidade espacial. O processador traz blocos inteiros de dados da RAM para a memória Cache (L1/L2/L3) de uma só vez, reduzindo o gargalo de I/O de memória.
+A mediana é a referência para a participação percentual por ser menos sensível
+a interferências do sistema. O desvio-padrão, mínimo e máximo expõem a dispersão.
 
-## 5. Procedimento complementar preparado
+## Estado da complementação e hotspots
 
-A cópia `codigos/instrumentacao/01_matmul_perfil.cpp` preserva a entrada, a ordem
-`i-k-j` e o checksum do baseline, acrescentando relógios em torno de alocação,
-inicialização, multiplicação e checksum. O arquivo original do professor não é
-modificado. O coletor faz um aquecimento por dimensão, cinco repetições, valida
-checksums, recusa sobrescrita e registra ambiente, compilador, flags e hash da
-fonte:
+Em 10 de novembro de 2026, o host disponível não tinha Docker, compilador C++ nem
+WSL instalados. Por isso, a coleta real não pôde ser executada e nenhum novo arquivo
+de resultados foi criado. A tabela exigida por etapa permanece pendente:
+
+| N | Etapa | Média | Mediana | Desvio-padrão | Participação |
+|---:|---|---:|---:|---:|---:|
+| 256, 512 e 1024 | alocação, inicialização, multiplicação e checksum | **pendente de medição real** | **pendente** | **pendente** | **pendente** |
+
+A complexidade indica a multiplicação (`O(N³)`) como hotspot provável, enquanto
+as demais etapas são `O(N²)`. Isso é uma hipótese baseada na estrutura do código,
+não uma conclusão experimental. Sem o CSV complementar não há identificação
+quantitativa de hotspot, e esta tarefa permanece parcialmente concluída.
+
+## Reprodução no Docker do projeto
+
+Na raiz do repositório, use um nome novo para não sobrescrever resultados históricos:
 
 ```bash
-python3 scripts/coletar_perfil_sequencial.py \
+docker compose build pp-lab
+docker compose run --rm pp-lab python3 scripts/coletar_perfil_sequencial.py \
   --sizes 256 512 1024 --repetitions 5 \
-  --output resultados/perfil_sequencial_complementar.csv
+  --output resultados/perfil_sequencial_etapas_2026-11-10.csv
 
-python3 scripts/analisar_complementacao.py \
-  --sequencial resultados/perfil_sequencial_complementar.csv \
-  --output-dir resultados/complementacao_marco2
+docker compose run --rm pp-lab python3 scripts/analisar_complementacao.py \
+  --sequencial resultados/perfil_sequencial_etapas_2026-11-10.csv \
+  --output-dir resultados/perfil_sequencial_etapas_2026-11-10_resumo
 ```
 
-O segundo comando gera `perfil_sequencial_resumo.csv`, com mediana por trecho e
-participação relativa à mediana do total. Tempos muito curtos devem ser tratados
-com cautela por causa da resolução do relógio e do custo da própria
-instrumentação. Neste host de revisão não havia compilador C++, Docker nem uma
-distribuição WSL; logo, o procedimento não foi executado e nenhuma tabela de
-tempos foi preenchida artificialmente.
+Os arquivos esperados são o CSV bruto, o arquivo
+`perfil_sequencial_etapas_2026-11-10_ambiente.txt` e o CSV de resumo. Os scripts
+usam criação exclusiva e recusam sobrescrever destinos existentes.
 
-## 6. Uso como baseline
-Estes tempos medianos do algoritmo puramente sequencial representam o nosso *Baseline* ($T_{seq}$). Eles serão a referência fundamental para as medições futuras. Quando os códigos paralelizados forem integrados, utilizaremos estes exatos números para calcular:
-* **Speedup ($S$):** O quão mais rápido o código ficou ($S = T_{seq} / T_{paralelo}$).
-* **Eficiência:** O aproveitamento real de cada thread OpenMP ou processo MPI adicionado.
+## Limitações da instrumentação
+
+- Trechos muito curtos podem se aproximar da resolução do relógio e sofrer maior
+  influência proporcional do custo de instrumentação.
+- `total_s` inclui os pequenos intervalos entre regiões; as participações podem
+  somar menos de 100%.
+- A alocação de `C` inclui sua inicialização com zero, como no baseline.
+- O perfil mede tempo de parede e não fornece contadores de hardware ou cache misses.
+- Resultados dependem da carga, frequência e política de energia do host; o arquivo
+  de ambiente deve acompanhar qualquer CSV publicado.
+
+## Uso futuro como baseline
+
+Depois da coleta real e da revisão dos checksums, a mediana da multiplicação pode
+ser usada como `T_seq` nos cálculos de speedup e eficiência. Ela não deve ser
+misturada com o tempo total instrumentado sem declarar a região comparada.

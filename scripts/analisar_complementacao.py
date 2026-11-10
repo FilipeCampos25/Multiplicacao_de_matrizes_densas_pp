@@ -6,8 +6,15 @@ import statistics
 from pathlib import Path
 
 
-def mediana(rows, field):
-    return statistics.median(float(row[field]) for row in rows)
+def estatisticas(rows, field):
+    values = [float(row[field]) for row in rows]
+    return {
+        "media_s": statistics.mean(values),
+        "mediana_s": statistics.median(values),
+        "desvio_padrao_s": statistics.stdev(values) if len(values) > 1 else 0.0,
+        "min_s": min(values),
+        "max_s": max(values),
+    }
 
 
 def escrever(path, fields, rows):
@@ -24,12 +31,12 @@ def analisar_sequencial(path):
     result = []
     for n in sorted({int(r["N"]) for r in rows}):
         group = [r for r in rows if int(r["N"]) == n]
-        total = mediana(group, "total_s")
+        total = estatisticas(group, "total_s")["mediana_s"]
         for stage in ("alocacao", "inicializacao", "multiplicacao", "checksum"):
-            value = mediana(group, stage + "_s")
-            result.append({"N": n, "trecho": stage, "mediana_s": value,
-                           "participacao_total_pct": 100 * value / total,
-                           "repeticoes": len(group)})
+            stats = estatisticas(group, stage + "_s")
+            result.append({"N": n, "trecho": stage, **stats,
+                           "participacao_total_pct": 100 * stats["mediana_s"] / total,
+                           "tempo_total_mediano_s": total, "repeticoes": len(group)})
     return result
 
 
@@ -40,10 +47,10 @@ def analisar_mpi(path):
     keys = sorted({(int(r["n"]), int(r["processos"])) for r in rows})
     for n, processes in keys:
         group = [r for r in rows if int(r["n"]) == n and int(r["processos"]) == processes]
-        total = mediana(group, "tempo_s")
+        total = estatisticas(group, "tempo_s")["mediana_s"]
         for stage, field in (("scatterv", "scatterv_s"), ("bcast", "bcast_s"),
                              ("computacao", "computacao_s"), ("gatherv", "gatherv_s")):
-            value = mediana(group, field)
+            value = estatisticas(group, field)["mediana_s"]
             result.append({"n": n, "processos": processes, "etapa": stage,
                            "mediana_s": value, "participacao_total_pct": 100 * value / total,
                            "tempo_total_mediano_s": total, "repeticoes": len(group)})
@@ -60,7 +67,8 @@ def main():
         parser.error("informe --sequencial e/ou --mpi")
     if args.sequencial:
         escrever(args.output_dir / "perfil_sequencial_resumo.csv",
-                 ["N", "trecho", "mediana_s", "participacao_total_pct", "repeticoes"],
+                 ["N", "trecho", "media_s", "mediana_s", "desvio_padrao_s", "min_s", "max_s",
+                  "participacao_total_pct", "tempo_total_mediano_s", "repeticoes"],
                  analisar_sequencial(args.sequencial))
     if args.mpi:
         escrever(args.output_dir / "etapas_mpi_resumo.csv",
