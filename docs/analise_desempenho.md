@@ -213,9 +213,10 @@ custo. Não se extrapola esta série para múltiplos nós.
 
 ## 9. Lei de Amdahl
 
-`S_Amdahl(p)=1/(f+(1-f)/p)`. Usam-se cenários **hipotéticos**, sem ajuste,
-f=0,05, 0,10 e 0,20. Tracejados são referências, marcadores são dados agregados.
-Nenhuma curva é registrada como medição experimental.
+`S_Amdahl(p)=1/[s+(1-s)/p]`, em que `s` é a fração serial e `1-s` a
+fração paralelizável. Os gráficos existentes usam cenários **hipotéticos**, sem
+ajuste, `s=0,05`, `0,10` e `0,20`. Tracejados são referências, marcadores são
+dados agregados. Nenhuma curva é registrada como medição experimental.
 
 ![Amdahl N=256](../resultados/graficos/amdahl_cae72fda_N256.svg)
 ![Amdahl N=512](../resultados/graficos/amdahl_cae72fda_N512.svg)
@@ -228,15 +229,78 @@ não descreve custos variáveis de memória/comunicação ou regressão MPI entr
 p=4/8. Também prevê S(1)=1, enquanto implementações distintas e ruído podem
 produzir outro valor. Não se aplica diretamente à série fraca, cujo problema cresce.
 
-Os dados atuais também não permitem estimar defensavelmente uma única fração
-serial. Inverter Amdahl para cada speedup produziria uma "fração efetiva" que
-absorve comunicação MPI, criação/sincronização OpenMP, contenção de memória,
-SMT, diferenças de código e ruído; a regressão MPI entre p=4 e p=8 viola ainda
-mais a hipótese de overhead constante. Para estimar a fração paralelizável seriam
-necessários tempos medidos, no mesmo executável e ambiente, para regiões
-intrinsecamente seriais e paralelizáveis, além de repetições e controle de
-overheads. Por isso, preservam-se apenas as curvas hipotéticas, sem speedup máximo
-estimado a partir dos resultados atuais.
+### 9.1 Escopos que não podem ser misturados
+
+O baseline original cronometra somente o kernel de multiplicação. O perfilamento
+complementar preparado na Tarefa 1 separa alocação, inicialização, multiplicação e
+checksum, mas **não foi executado**: não existe em `resultados/` um CSV de etapas.
+Logo, não há fração serial medida por etapas e não seria válido dividir os tempos
+quadráticos pelo tempo total da aplicação para declarar o limite do kernel.
+Alocação, inicialização e checksum também ficam fora dos intervalos OpenMP e MPI
+comparados nesta seção.
+
+O speedup principal, `Tseq_original/Tp`, compara fontes diferentes e resulta em
+`S(1) != 1`. Para inverter Amdahl usa-se, portanto, somente
+`speedup_relativo_1=T_impl(1)/T_impl(p)`, obtido no mesmo executável, ambiente,
+dimensão e região cronometrada. O escopo é a **escalabilidade efetiva da
+implementação paralela**, e não uma decomposição medida do baseline em instruções
+seriais e paralelas.
+
+### 9.2 Fração serial efetiva inferida
+
+Invertendo a equação para uma observação em `p`:
+
+```text
+s_efetiva(p) = [1/S_rel(p) - 1/p] / [1 - 1/p]
+fração paralelizável efetiva = 1 - s_efetiva(p)
+Smax do modelo ajustado = 1/s_efetiva(p)
+```
+
+A tabela usa o ponto de maior paralelismo medido, `p=8`. É uma estimativa
+condicionada a esse ponto, não uma constante intrínseca do programa nem uma
+extrapolação validada para mais trabalhadores.
+
+| Implementação | N | S_rel(8)=T(1)/T(8) | s efetiva em p=8 | 1-s efetiva | Smax=1/s |
+|---|---:|---:|---:|---:|---:|
+| OpenMP | 256 | 2,596263 | 0,297336 | 0,702664 | 3,363 |
+| OpenMP | 512 | 3,443411 | 0,189040 | 0,810960 | 5,290 |
+| OpenMP | 1024 | 3,325887 | 0,200768 | 0,799232 | 4,981 |
+| MPI | 256 | 2,166226 | 0,384723 | 0,615277 | 2,599 |
+| MPI | 512 | 1,399942 | 0,673503 | 0,326497 | 1,485 |
+| MPI | 1024 | 1,461535 | 0,639099 | 0,360901 | 1,565 |
+
+Por exemplo, em OpenMP/N=1024, as medianas são `T(1)=0,912507 s` e
+`T(8)=0,274365 s`. Assim, `S_rel(8)=0,912507/0,274365=3,325887` e
+`s_efetiva=(1/3,325887-1/8)/(1-1/8)=0,200768`. Nesse ajuste, a fração
+paralelizável efetiva é `0,799232` (79,9232%) e o limite assintótico formal é
+`Smax=1/0,200768=4,981`. Esse limite pertence ao modelo efetivo ajustado; não é
+o speedup máximo experimentalmente demonstrado.
+
+### 9.3 Previsão versus observação e limites da inferência
+
+Aplicando a estimativa OpenMP/N=1024 obtida em `p=8`, Amdahl prevê
+`S(2)=1,666` e `S(4)=2,496`; foram observados, relativamente à execução OpenMP
+com uma thread, `1,746` e `2,825`. Para MPI/N=1024, a estimativa de `p=8`
+prevê `S(2)=1,220` e `S(4)=1,371`, contra observações `1,605` e `1,857`.
+O próprio parâmetro inferido muda com `p`: em OpenMP/N=1024, `s_efetiva` é
+0,145313, 0,138580 e 0,200768 para p=2, 4 e 8; em MPI/N=1024, é 0,246117,
+0,384821 e 0,639099. Portanto, uma fração constante não explica toda a série.
+
+No OpenMP, criação da equipe, barreira final, sincronização, SMT e competição
+por cache/largura de banda entram no tempo e podem variar com `p`. No MPI,
+`Scatterv`, `Bcast`, `Gatherv` e esperas são custos de comunicação medidos no
+intervalo, não trechos seriais do kernel; sua variação explica por que a fração
+efetiva cresce fortemente e por que p=8 regride em N=512/1024. Diferenças de
+cache, frequência, código gerado e ruído também afetam as razões. Sem contadores
+e tempos separados, não se atribui quantitativamente o afastamento a uma causa.
+
+Assim, os dados sustentam frações **efetivas por configuração** e os respectivos
+limites formais acima. Uma fração serial do kernel baseada em etapas permanece
+pendente. Para estimá-la seriam necessários tempos repetidos, no mesmo ambiente
+e com a mesma fronteira de cronometragem, de trabalho serial inevitável e trabalho
+paralelizável dentro do kernel. Para separar a degradação MPI, também é necessária
+a coleta já instrumentada de `Scatterv`, `Bcast`, computação e `Gatherv`. Os
+cenários de 5%, 10% e 20% continuam identificados apenas como hipóteses.
 
 ## 10. Gargalos possíveis e limitações
 
@@ -337,7 +401,7 @@ conclusões locais, sem prova de causa dos gargalos ou superioridade geral.
 | 6. Eficiência | Concluído: S/p, decimal e percentual, sem truncamento |
 | 7. Forte | Concluído: três N, quatro equipes, OpenMP e MPI |
 | 8. Fraca | Concluído: série própria, arredondamento e métricas |
-| 9. Amdahl | Concluído: três cenários hipotéticos e discussão de limites |
+| 9. Amdahl | Parcial: fração efetiva inferida por configuração e Smax formal; fração por etapas do kernel pendente de coleta |
 | 10. Gráficos | Concluído: cinco categorias, SVGs e históricos separados |
 | 11. CSVs | Concluído: consolidado, métricas e fraca reproduzíveis |
 | 12. Gargalos | Discussão medida/hipótese preservada; perfilamento específico preparado, mas não executado neste host |
