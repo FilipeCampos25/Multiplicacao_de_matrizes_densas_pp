@@ -2,7 +2,7 @@
 
 ## 1. Introdução e objetivo
 
-Este documento analisa o baseline sequencial de multiplicação de matrizes densas da disciplina de Programação Paralela (CCO085), implementado em [`01_matmul.cpp`](../codigos/baselines_sequenciais_CCO085/01_matmul.cpp). O objetivo é descrever seu funcionamento, custo computacional, comportamento de memória e possibilidades de paralelização futura, mantendo a implementação original.
+Este documento analisa o baseline sequencial de multiplicação de matrizes densas da disciplina de Programação Paralela (CCO085), implementado em [`01_matmul.cpp`](../codigos/00_sequencial/01_matmul.cpp). O objetivo é descrever seu funcionamento, custo computacional, comportamento de memória e possibilidades de paralelização futura, mantendo a implementação original.
 
 O programa calcula **C = A × B**, em que A, B e C são matrizes quadradas de dimensão N × N, com elementos do tipo `double`. Cada elemento do resultado é o produto escalar da linha correspondente de A com a coluna correspondente de B:
 

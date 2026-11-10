@@ -24,7 +24,7 @@ de `142 PASS` como se fosse a execução atual. Deixar abertos
 
 Apresentar multiplicação densa `C=A×B`, custo aproximado `2N³` e memória
 `O(N²)`. Identificar
-`codigos/baselines_sequenciais_CCO085/01_matmul.cpp` como baseline fornecido
+`codigos/00_sequencial/01_matmul.cpp` como baseline fornecido
 pelo professor e separar esse material das adaptações do grupo.
 
 ## 0:45–1:35 — baseline ao vivo

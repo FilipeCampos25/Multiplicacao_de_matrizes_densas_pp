@@ -2,7 +2,7 @@
 
 ## Evidência histórica
 
-O baseline original do professor (`codigos/baselines_sequenciais_CCO085/01_matmul.cpp`)
+O baseline original do professor (`codigos/00_sequencial/01_matmul.cpp`)
 permanece inalterado. O arquivo histórico `resultados/baseline_sequencial.csv` contém
 cinco execuções para cada dimensão, realizadas em Windows/MINGW64, com GCC `-O2`,
 em um AMD Ryzen 5 3400G com 8 GB de RAM. Esses dados medem somente a região da
