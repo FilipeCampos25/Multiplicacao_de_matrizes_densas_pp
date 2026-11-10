@@ -147,7 +147,7 @@ class Programs:
         self.env.update(LC_ALL="C", OMP_DYNAMIC="FALSE", OMP_THREAD_LIMIT="4")
 
     def binary(self, kind, name):
-        source_dir = {"base": "baselines_sequenciais_CCO085",
+        source_dir = {"base": "00_sequencial",
                       "openmp": "01_openmp", "mpi": "02_mpi"}[kind]
         source = ROOT / "codigos" / source_dir / f"{name}.cpp"
         if not source.is_file() and kind != "base":

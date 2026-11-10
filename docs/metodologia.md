@@ -2,7 +2,7 @@
 
 ## Referência matemática
 
-O baseline original é `codigos/baselines_sequenciais_CCO085/01_matmul.cpp`, do
+O baseline original é `codigos/00_sequencial/01_matmul.cpp`, do
 Prof. Rodrigo Gonçalves Pinto. Ele gera internamente matrizes quadradas N×N,
 armazenadas em vetores row-major, e calcula C=A×B na ordem `i-k-j`. A mesma
 inicialização determinística é mantida nas implementações paralelas.

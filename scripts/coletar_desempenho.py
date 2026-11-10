@@ -85,7 +85,7 @@ def main(argv=None):
     if check.returncode or 'FAIL=0' not in check.stdout or 'SKIP=0' not in check.stdout:
         raise RuntimeError('Suite de corretude nao passou integralmente:\n'+check.stdout+check.stderr)
     artifacts = [*bins.values(), ROOT/'Makefile', Path(__file__),
-                 ROOT/'codigos/baselines_sequenciais_CCO085/01_matmul.cpp',
+                 ROOT/'codigos/00_sequencial/01_matmul.cpp',
                  ROOT/'codigos/01_openmp/matmul_openmp.cpp', ROOT/'codigos/02_mpi/matmul_mpi.cpp']
     meta = {'started_utc':datetime.now(timezone.utc).isoformat(), 'platform':platform.platform(),
             'resources_before':limits, 'arguments':vars(args)|{'output':str(output)},

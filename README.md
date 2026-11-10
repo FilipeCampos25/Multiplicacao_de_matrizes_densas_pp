@@ -58,12 +58,17 @@ O ambiente Docker contém os compiladores e as dependências necessárias para c
 Multiplicacao_de_matrizes_densas_pp/
 │
 ├── codigos/
-│   ├── baselines_sequenciais_CCO085/
+│   ├── 00_sequencial/
+│   │   └── 01_matmul.cpp
 │   ├── 01_openmp/
 │   │   ├── 01_matmul_openmp.cpp
 │   │   └── matmul_openmp.cpp
-│   └── 02_mpi/
-│       └── matmul_mpi.cpp
+│   ├── 02_mpi/
+│   │   └── matmul_mpi.cpp
+│   ├── instrumentacao/
+│   │   └── 01_matmul_perfil.cpp
+│   └── material_professor_CCO085/
+│       └── ... (21 exemplos didáticos preservados)
 │
 ├── scripts/
 │   ├── test_matmul.sh
@@ -91,6 +96,10 @@ Multiplicacao_de_matrizes_densas_pp/
 
 Os executáveis são gerados em `bin/` durante a compilação. Essa pasta pode ser removida e recriada com o Makefile.
 
+As três abordagens estão em `00_sequencial` (referência sequencial de corretude e desempenho fornecida pelo professor), `01_openmp` (threads e memória compartilhada) e `02_mpi` (processos e comunicação MPI). A relação didática é **Sequencial → OpenMP → MPI → Comparação experimental**.
+
+`instrumentacao` contém instrumentos auxiliares de análise e perfilamento, não uma quarta implementação independente. `material_professor_CCO085` preserva os exemplos de aula, separados das implementações avaliadas e excluídos da compilação, dos testes e dos benchmarks principais. O executável sequencial continua em `bin/base/01_matmul`.
+
 A pasta `resultados/` armazena dados experimentais, metadados e gráficos produzidos pelas ferramentas de análise.
 
 ## 5. Implementações
@@ -101,7 +110,7 @@ O algoritmo sequencial é a referência matemática do projeto.
 
 Arquivo principal:
 
-`codigos/baselines_sequenciais_CCO085/01_matmul.cpp`
+`codigos/00_sequencial/01_matmul.cpp`
 
 São utilizadas matrizes quadradas de dimensão N × N, armazenadas em memória contígua no formato *row-major*.
 

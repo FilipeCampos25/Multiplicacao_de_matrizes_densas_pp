@@ -8,7 +8,7 @@ CXXFLAGS := -O2 -std=c++17 -Wall -Wextra -Wpedantic
 LDLIBS   := -lm
 
 BIN_DIR      := bin
-BASE_SOURCE  := codigos/baselines_sequenciais_CCO085/01_matmul.cpp
+BASE_SOURCE  := codigos/00_sequencial/01_matmul.cpp
 BASE_BINARY  := $(BIN_DIR)/base/01_matmul
 OPENMP_DIR   := codigos/01_openmp
 MPI_DIR      := codigos/02_mpi

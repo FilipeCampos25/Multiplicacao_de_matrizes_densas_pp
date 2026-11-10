@@ -14,7 +14,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "codigos/instrumentacao/01_matmul_perfil.cpp"
-BASELINE_SOURCE = ROOT / "codigos/baselines_sequenciais_CCO085/01_matmul.cpp"
+BASELINE_SOURCE = ROOT / "codigos/00_sequencial/01_matmul.cpp"
 PATTERN = re.compile(r"(N|checksum|total_s|alocacao_s|inicializacao_s|multiplicacao_s|checksum_s)=([^ ]+)")
 BASELINE_PATTERN = re.compile(r"N=(\d+)\s+checksum=([^ ]+)\s+tempo=([^ ]+)\s+s")
 FIELDS = ["N", "repeticao", "total_s", "alocacao_s", "inicializacao_s", "multiplicacao_s", "checksum_s", "checksum", "status"]

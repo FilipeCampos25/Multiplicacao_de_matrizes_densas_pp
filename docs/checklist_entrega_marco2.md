@@ -1,5 +1,10 @@
 # Checklist final de entrega — Marco 2
 
+> Nota de organização (10/11/2026): o baseline foi movido para
+> `codigos/00_sequencial/01_matmul.cpp` e os exemplos de aula para
+> `codigos/material_professor_CCO085/`. O checklist abaixo preserva o estado
+> da auditoria anterior, inclusive suas pendências históricas.
+
 Auditoria atualizada em **10/11/2026** na branch
 `fix/ajustes-finais-marco2`, após os commits `b558803`, `e388003` e `06d9b88`.
 As classificações abaixo distinguem evidência histórica, inspeção da revisão atual

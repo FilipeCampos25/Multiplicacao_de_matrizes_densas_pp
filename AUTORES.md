@@ -22,6 +22,6 @@ Commits de merge ou revisão não provam autoria exclusiva do conteúdo incorpor
 
 ## Código fornecido pelo professor
 
-O **Prof. Rodrigo Gonçalves Pinto** é autor do código sequencial original `codigos/baselines_sequenciais_CCO085/01_matmul.cpp` e dos exemplos didáticos em `codigos/baselines_sequenciais_CCO085/`. São material fornecido ao grupo, não contribuição autoral dos integrantes.
+O **Prof. Rodrigo Gonçalves Pinto** é autor do código sequencial original `codigos/00_sequencial/01_matmul.cpp` e dos exemplos didáticos em `codigos/material_professor_CCO085/`. São material fornecido ao grupo, não contribuição autoral dos integrantes.
 
 O kernel, a inicialização determinística, o armazenamento row-major e a ordem `i-k-j` derivam desse baseline. Paralelização OpenMP, distribuição MPI, validações, testes, automação, experimentos e documentação foram desenvolvidos ou adaptados pelo grupo.

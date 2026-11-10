@@ -10,6 +10,10 @@ e permanece restrito à coleta OpenMP anterior; não há comparação conjunta n
 
 ## 2. Implementações e inventário
 
+> Nota de organização (10/11/2026): o baseline está atualmente em
+> `codigos/00_sequencial/01_matmul.cpp`. Os caminhos históricos abaixo e nos
+> metadados de `resultados/` foram preservados como registro da coleta.
+
 O baseline original `codigos/baselines_sequenciais_CCO085/01_matmul.cpp`
 permaneceu intacto. O OpenMP avaliado é `matmul_openmp.cpp`, variante `static`,
 que distribui linhas por threads. `01_matmul_openmp.cpp` também está disponível
