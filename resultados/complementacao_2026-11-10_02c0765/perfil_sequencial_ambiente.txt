@@ -1,0 +1,33 @@
+{
+  "started_utc": "2026-11-11T01:16:08.086835+00:00",
+  "finished_utc": "2026-11-11T01:16:12.753262+00:00",
+  "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "processor": "x86_64",
+  "cpu_logical": 12,
+  "compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "flags": [
+    "-O2",
+    "-std=c++17",
+    "-Wall",
+    "-Wextra",
+    "-Wpedantic"
+  ],
+  "source": "codigos/instrumentacao/01_matmul_perfil.cpp",
+  "source_sha256": "ad2d5856272638b670fa0a6cf61867b786e2e6268f0defef33a4e285ccfe88e8",
+  "baseline_source": "codigos/00_sequencial/01_matmul.cpp",
+  "baseline_source_sha256": "af87de5c9c58d20429eaf73d89b8d0379a86a5c656227f0ead2a967d8aca507a",
+  "baseline_checksums": {
+    "256": 4109165.296,
+    "512": 32883431.310401,
+    "1024": 263088437.159955
+  },
+  "sizes": [
+    256,
+    512,
+    1024
+  ],
+  "repetitions": 5,
+  "warmups_per_size": 1,
+  "output": "/lab/resultados/complementacao_2026-11-10_02c0765/perfil_sequencial.csv",
+  "observations": 15
+}

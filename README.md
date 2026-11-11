@@ -332,6 +332,14 @@ Os testes incluem verificações que asseguram a rejeição de resultados incorr
 
 ## 9. Resultados da validação — 05/11/2026
 
+> **Atualização de 10/11/2026:** a versão reorganizada (`02c0765`) foi compilada
+> e validada em cópia temporária extraída do Git: `make test` aprovado,
+> 142 casos de corretude e 168 testes gerais aprovados. Também foram executadas
+> as novas coletas de perfilamento sequencial e MPI por etapas. Consulte as
+> [evidências da complementação](docs/complementacao_validada.md), incluindo
+> a distinção entre a cópia versionada LF e os scripts CRLF da pasta local.
+> A seção abaixo mantém o registro histórico de 05/11.
+
 As implementações foram compiladas e testadas em ambiente Windows com Docker Desktop e contêiner Linux.
 
 Os resultados abaixo foram observados em execução local documentada no terminal em **05 de novembro de 2026**.
@@ -497,7 +505,7 @@ A documentação experimental apresenta 21 gráficos SVG, incluindo resultados d
 
 As complementações de novembro estão registradas separadamente:
 
-- [Perfilamento sequencial](docs/perfilamento_sequencial.md): instrumentação e protocolo por etapas; a coleta quantitativa permanece pendente.
+- [Perfilamento sequencial](docs/perfilamento_sequencial.md): instrumentação e protocolo por etapas; a [nova coleta quantitativa](docs/complementacao_validada.md) foi executada em 10/11/2026.
 - [Análise experimental](docs/analise_desempenho.md): estimativa efetiva de Amdahl derivada do speedup histórico, com suas limitações.
 - [Escalabilidade MPI](docs/escalabilidade_mpi.md): instrumentação para separar cálculo e coletivas; a execução foi bloqueada no host da auditoria.
 - [Checklist final do Marco 2](docs/checklist_entrega_marco2.md): estado por requisito, evidências, testes e pendências em 10/11/2026.
@@ -508,7 +516,7 @@ Essas observações pertencem ao ambiente e à coleta registrados. Não represen
 
 **Importante:** as validações funcionais de 05/11/2026 confirmaram a execução e a corretude dos códigos, mas não constituem uma nova coleta completa de benchmarks. Os resultados experimentais de outubro permanecem identificados como históricos.
 
-Os commits de complementação de 10/11/2026 são posteriores a essa validação funcional. A tentativa de revalidação no host da auditoria foi bloqueada pela ausência de Make, compiladores, MPI, Bash e Docker. Portanto, o registro de 05/11 não deve ser apresentado como validação da revisão atual; consulte o checklist final antes da entrega.
+Os commits de complementação de 10/11/2026 são posteriores à validação de 05/11. A primeira tentativa de revalidação foi bloqueada no host da auditoria. Posteriormente, a revisão reorganizada `02c0765` passou no ambiente Docker, conforme os [logs e resultados da nova validação](docs/complementacao_validada.md). Os registros antigos não substituem essa evidência específica da revisão.
 
 ## 13. Solução de problemas
 

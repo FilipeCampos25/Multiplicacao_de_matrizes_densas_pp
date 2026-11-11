@@ -1,0 +1,172 @@
+{
+  "commit": "02c0765d26881a9bc07602faf77af1cfe9fb71c9",
+  "branch": "refactor/organizacao-sequencial-openmp-mpi",
+  "local_date": "2026-11-10",
+  "timezone": "America/Sao_Paulo",
+  "execution": "git archive HEAD; snapshot extracted to temporary directory; docker compose -f <snapshot>/docker-compose.yml; /lab mounted from snapshot",
+  "docker_image": "iesb/pp-lab:2026.2",
+  "docker_image_id": "sha256:c987e7098115a132c78a82e11ca66525e6813ded2e35359bcfb6a962aa0968a8",
+  "collection_exit_code": 0,
+  "analysis_exit_code": 0,
+  "observations": {
+    "sequential_profile": 15,
+    "mpi_stages": 60,
+    "mpi_collector_sequential_references": 15
+  },
+  "warnings": [
+    "Open MPI: failed to bind memory; no claim of fully guaranteed affinity",
+    "Validation applies to Git snapshot with LF, not original local CRLF files"
+  ],
+  "executed_files": [
+    {
+      "path": "Makefile",
+      "sha256": "e90c40d40ba3b06a2ed0569b5df6e5e91b8d7d47a66f154c2990cd50da8a7d5c"
+    },
+    {
+      "path": "Dockerfile",
+      "sha256": "e97b61da5f7f50dad5e29e9915a04b0234172a61092a416b3d53e8b7964f66ca"
+    },
+    {
+      "path": "docker-compose.yml",
+      "sha256": "001a62daf943b09c934bfb1e50f12515d357509f8866d16fc6871ecd5d0edfd8"
+    },
+    {
+      "path": "scripts/coletar_perfil_sequencial.py",
+      "sha256": "e81aa6e422a731532c58ae66208c3e62f21337744116a6a2086fd8979d9569d3"
+    },
+    {
+      "path": "scripts/benchmark_mpi.sh",
+      "sha256": "b0f3f6f299fcbcf8c183a1a30cc53fe17cb8a9b24305c43f07cdff3de75ccb5e"
+    },
+    {
+      "path": "scripts/analisar_complementacao.py",
+      "sha256": "a767fca69b20216f032edff0cc4255b55bedbd35093b19fbead5e7d701d755a6"
+    },
+    {
+      "path": "scripts/test_matmul.sh",
+      "sha256": "b9f6a205bf44316563bfc0c58c6b4bc92e8cb6ae78937d52dd1b54f6639bc79b"
+    },
+    {
+      "path": "scripts/test_matmul_openmp.sh",
+      "sha256": "5dcb76a292a76cf8cad9e7a7ddf2a2f18d170c0c47a824316e3227f28c1531a0"
+    },
+    {
+      "path": "scripts/test_matmul_mpi.sh",
+      "sha256": "911667184f3f3ebc3d52272b5b022606c6af35f5a20f740246c10fb1a9062126"
+    },
+    {
+      "path": "tests/test_correctness.py",
+      "sha256": "7a43c254725bac4be2089dd634e9fb0c1300c760206435d9be7378950ae6d841"
+    },
+    {
+      "path": "codigos/00_sequencial/01_matmul.cpp",
+      "sha256": "af87de5c9c58d20429eaf73d89b8d0379a86a5c656227f0ead2a967d8aca507a"
+    },
+    {
+      "path": "codigos/01_openmp/01_matmul_openmp.cpp",
+      "sha256": "dd9e43d7ca5345b8e9fe7c035392520c8ea8486ada0c7cac77a50bb8105c3719"
+    },
+    {
+      "path": "codigos/01_openmp/matmul_openmp.cpp",
+      "sha256": "fd769670cf53294b764de787adf58ba0d46360a60f061654e0a55c9364736e8f"
+    },
+    {
+      "path": "codigos/02_mpi/matmul_mpi.cpp",
+      "sha256": "483ea3059f6b63c8f86438fbe00d3c6c0c4d7d082d95d735e953fb85bcfe6deb"
+    },
+    {
+      "path": "codigos/instrumentacao/01_matmul_perfil.cpp",
+      "sha256": "ad2d5856272638b670fa0a6cf61867b786e2e6268f0defef33a4e285ccfe88e8"
+    },
+    {
+      "path": "bin/base/01_matmul",
+      "sha256": "ca242a959c397962b62f9c12ce6aa0b6cc35d77b61cb1ab0f41ba7ef8134da31"
+    },
+    {
+      "path": "bin/mpi/matmul_mpi",
+      "sha256": "7f620754c11c39b4983bbfe9c0a1ec62873a9ace27118f0a05068b6bf6496780"
+    },
+    {
+      "path": "bin/openmp/01_matmul_openmp",
+      "sha256": "a33083e800baa425d20fee35a105caf3c70e8835d2b8d5dc271fe5a174e91500"
+    },
+    {
+      "path": "bin/openmp/matmul_openmp",
+      "sha256": "0a360d749ba2640889194d969b494c957d5dca698154aa38d6c7b446848d7f2b"
+    },
+    {
+      "path": "bin/perfil/01_matmul_baseline",
+      "sha256": "ca242a959c397962b62f9c12ce6aa0b6cc35d77b61cb1ab0f41ba7ef8134da31"
+    },
+    {
+      "path": "bin/perfil/01_matmul_perfil",
+      "sha256": "19470f4c7432d1be19056e14760e82b93a29922d76aa224cf99a8ff68880a073"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "coletas.txt",
+      "sha256": "62ff68ce5b07f11df00697d3d7eb8fa0b61bc12acfb6709ed30bd6900d6d3691"
+    },
+    {
+      "path": "mpi_etapas.csv",
+      "sha256": "75de498c6d0b2ee856b50ef9543f1d1a6484dd24162dd0ca35833d2507aa4fdb"
+    },
+    {
+      "path": "mpi_etapas_ambiente.txt",
+      "sha256": "aa8edfb6cd9ce2fc6818721bebd3eeb8829a813fa8ec384a5efd3dc4ff53ada5"
+    },
+    {
+      "path": "perfil_sequencial.csv",
+      "sha256": "64ac412dfbe5425ba5cd6d254008b4c306697156f91993386115ad546d555dd5"
+    },
+    {
+      "path": "perfil_sequencial_ambiente.txt",
+      "sha256": "2aa4406790bc2039a4bd129090b41960d998e1ed02ee0a4493c52a2df6dbcbd9"
+    },
+    {
+      "path": "reproduzir_coletas.sh",
+      "sha256": "9f3a1fe15af1249a419f711a8fedf2272a2588f3c0b46f0402c3de8ced453343"
+    },
+    {
+      "path": "testes.json",
+      "sha256": "5c777b774e50e348aabad88f598dc2067f20d37bb8c2b08419605c4f99d36028"
+    },
+    {
+      "path": "teste_0.txt",
+      "sha256": "5ddca00af8c4ad5b6bd3b7d0e57f8f419e9c5eaf5cb4376cb1daa4d5a6f9355b"
+    },
+    {
+      "path": "teste_1.txt",
+      "sha256": "0398766da3d7cea9ba03962b10df369a442256f9cd531e65b0359153f42e2a02"
+    },
+    {
+      "path": "teste_2.txt",
+      "sha256": "d63252d72f78f8955f6b3fb8eb68ac1ff3622bc4d6ed7eea1e5c5e2a64256931"
+    },
+    {
+      "path": "teste_3.txt",
+      "sha256": "996dd47627b568a367367bb25f6933bc1e5994ad22b9fd4db988c7d99939158c"
+    },
+    {
+      "path": "teste_4.txt",
+      "sha256": "43cf64382ddd60f229d7b6f37ee562f99e24dea1dcfeef264097743dfbe42e53"
+    },
+    {
+      "path": "teste_5.txt",
+      "sha256": "34ddae8f71686506b3d52f181f7c6cf54bd748ccbb5f2810a265e1bf363138ed"
+    },
+    {
+      "path": "resumos/configuracoes_mpi_resumo.csv",
+      "sha256": "4b9e43ca7ef6a7eb3f6bbbf6dce125021446d3600a0abebef71cd237f04d4165"
+    },
+    {
+      "path": "resumos/etapas_mpi_resumo.csv",
+      "sha256": "a714d1baa5b1888111ce52c3d0e428c781bd428eeff88589461191ab30d076e2"
+    },
+    {
+      "path": "resumos/perfil_sequencial_resumo.csv",
+      "sha256": "b98c983d273c1117c68fea95de75e0df49de24ce0e06e294463e6e11cf044b23"
+    }
+  ]
+}

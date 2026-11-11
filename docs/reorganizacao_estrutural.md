@@ -1,5 +1,12 @@
 # Relatório da reorganização estrutural — 10/11/2026
 
+> **Validação posterior:** o bloqueio de execução registrado neste relatório
+> foi superado em uma cópia temporária da revisão `02c0765`, extraída do Git.
+> Build, integração, 142 casos de corretude e 168 testes gerais passaram.
+> As novas coletas sequencial e MPI também foram executadas. Consulte a
+> [complementação validada](complementacao_validada.md) para os logs e limites.
+> O relato abaixo preserva a situação no momento da refatoração.
+
 Branch: `refactor/organizacao-sequencial-openmp-mpi`.
 Estado inicial: branch já existente, HEAD `635f81d`, sem diferenças em relação
 à main, sem alterações locais nem arquivos não rastreados informados por

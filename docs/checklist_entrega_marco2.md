@@ -1,5 +1,21 @@
 # Checklist final de entrega — Marco 2
 
+## Complementação executada em 10/11/2026
+
+| Item solicitado | Estado atual | Evidência |
+| --- | --- | --- |
+| Nova coleta de perfilamento sequencial | Executada: 15 medições válidas | [CSV](../resultados/complementacao_2026-11-10_02c0765/perfil_sequencial.csv) |
+| Nova coleta MPI por etapas | Executada: 60 medições MPI válidas e 15 referências sequenciais | [CSV](../resultados/complementacao_2026-11-10_02c0765/mpi_etapas.csv) |
+| Testes da versão reorganizada | Build, integração, 142 casos de corretude e 168 testes gerais aprovados | [Comandos e retornos](../resultados/complementacao_2026-11-10_02c0765/testes.json) |
+
+A validação usa a revisão `02c0765` extraída do Git, com LF, em diretório
+temporário. Não atesta a execução dos scripts CRLF da pasta Windows original.
+O [relatório da complementação](complementacao_validada.md) detalha o ambiente,
+as limitações e a reversão da alteração local de finais de linha.
+Os itens não relacionados a essas três entregas não foram reavaliados.
+
+## Registro da auditoria anterior
+
 > Nota de organização (10/11/2026): o baseline foi movido para
 > `codigos/00_sequencial/01_matmul.cpp` e os exemplos de aula para
 > `codigos/material_professor_CCO085/`. O checklist abaixo preserva o estado
