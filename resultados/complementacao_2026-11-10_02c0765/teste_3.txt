@@ -1,0 +1,43 @@
+bash ./scripts/test_matmul.sh
+make[1]: Entering directory '/lab'
+make[1]: Nothing to be done for 'base'.
+make[1]: Nothing to be done for 'openmp'.
+make[1]: Leaving directory '/lab'
+OK N=1 threads=1 checksum=0.000000
+OK N=1 threads=2 checksum=0.000000
+OK N=1 threads=4 checksum=0.000000
+OK N=1 threads=8 checksum=0.000000
+OK N=2 threads=1 checksum=0.015400
+OK N=2 threads=2 checksum=0.015400
+OK N=2 threads=4 checksum=0.015400
+OK N=2 threads=8 checksum=0.015400
+OK N=7 threads=1 checksum=37.570400
+OK N=7 threads=2 checksum=37.570400
+OK N=7 threads=4 checksum=37.570400
+OK N=7 threads=8 checksum=37.570400
+OK N=10 threads=1 checksum=246.125000
+OK N=10 threads=2 checksum=246.125000
+OK N=10 threads=4 checksum=246.125000
+OK N=10 threads=8 checksum=246.125000
+OK N=64 threads=1 checksum=64131.552000
+OK N=64 threads=2 checksum=64131.552000
+OK N=64 threads=4 checksum=64131.552000
+OK N=64 threads=8 checksum=64131.552000
+OK N=128 threads=1 checksum=513396.915200
+OK N=128 threads=2 checksum=513396.915200
+OK N=128 threads=4 checksum=513396.915200
+OK N=128 threads=8 checksum=513396.915200
+make[1]: Entering directory '/lab'
+make[1]: Nothing to be done for 'base'.
+make[1]: Nothing to be done for 'mpi'.
+make[1]: Leaving directory '/lab'
+OK N=1 p=1 checksum=0.000000
+OK N=2 p=4 checksum=0.015400
+OK N=7 p=2 checksum=37.570400
+OK N=7 p=4 checksum=37.570400
+OK N=10 p=3 checksum=246.125000
+OK N=64 p=1 checksum=64131.552000
+OK N=64 p=2 checksum=64131.552000
+OK N=64 p=4 checksum=64131.552000
+OK N=128 p=4 checksum=513396.915200
+OK: baseline, OpenMP e MPI produziram resultados consistentes.

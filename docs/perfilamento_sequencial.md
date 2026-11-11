@@ -1,5 +1,12 @@
 # Perfilamento do algoritmo sequencial
 
+> **Atualização de 10/11/2026, após a tentativa bloqueada:** coleta executada
+> no Docker sobre a revisão `02c0765`, com 15 medições válidas (cinco por dimensão).
+> A multiplicação representou 90,60%, 94,12% e 97,39% do total mediano para
+> N=256, 512 e 1024. A [complementação validada](complementacao_validada.md)
+> reúne CSV, estatísticas por etapa, ambiente e hashes. As seções de estado
+> abaixo registram a tentativa anterior, cuja pendência de coleta foi resolvida.
+
 ## Evidência histórica
 
 O baseline original do professor (`codigos/00_sequencial/01_matmul.cpp`)

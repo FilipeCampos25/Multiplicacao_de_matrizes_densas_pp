@@ -66,3 +66,7 @@ CMakeCache.txt
 !/resultados/graficos/
 /resultados/graficos/*
 !/resultados/graficos/*.svg
+
+# Evidencias da validacao e das novas coletas da versao reorganizada.
+!/resultados/complementacao_2026-11-10_02c0765/
+!/resultados/complementacao_2026-11-10_02c0765/**

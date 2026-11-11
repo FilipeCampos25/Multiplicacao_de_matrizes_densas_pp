@@ -1,5 +1,13 @@
 # Avaliação de desempenho e escalabilidade MPI
 
+> **Atualização de 10/11/2026, após a tentativa bloqueada:** foram coletadas
+> 60 medições MPI por etapas, para N=256/512/1024 e p=1/2/4/8, com cinco
+> repetições válidas por configuração, além de 15 referências sequenciais.
+> Veja [dados, resumos e limitações](complementacao_validada.md), incluindo
+> o aviso de falha de vinculação de memória emitido pelo Open MPI.
+> A pendência de coleta por etapas descrita abaixo é histórica e foi resolvida
+> nesta máquina; a avaliação entre nós distintos continua fora desta coleta.
+
 ## Evolução do estado
 
 Em 21/10/2026, a avaliação MPI estava preparada, mas o host então disponível não possuía compilador, launcher MPI, Docker ou distribuição WSL. Naquela data não havia medições MPI, e nenhuma foi inventada.
