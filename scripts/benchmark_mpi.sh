@@ -6,7 +6,7 @@ set -uo pipefail
 export LC_ALL=C
 
 REPETICOES="${1:-5}"
-SAIDA="${2:-resultados/mpi_escalabilidade.csv}"
+SAIDA="${2:-resultados/01_coletas/complementares/mpi_etapas.csv}"
 DIMENSOES="${DIMENSOES:-255 256 512 1024}"
 PROCESSOS="${PROCESSOS:-1 2 4 8}"
 MPI_RUN="${MPI_RUN:-mpirun}"

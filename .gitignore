@@ -48,25 +48,11 @@ CMakeCache.txt
 *.gcov
 /codigos/**/01_matmul
 
-# Resultados gerados por execucoes e medicoes
-/resultados/*
-!/resultados/.gitkeep
-!/resultados/*.csv
-!/resultados/*.png
-!/resultados/*.svg
-!/resultados/*_ambiente.txt
+# Resultados experimentais versionados (coletas, análises, gráficos e validação)
+!/resultados/
+!/resultados/**
 
 # Logs e arquivos temporarios
 *.log
 *.tmp
 *.temp
-
-# Artefatos reproduziveis da analise de desempenho (Issue #10)
-!/resultados/analise_manifesto.json
-!/resultados/graficos/
-/resultados/graficos/*
-!/resultados/graficos/*.svg
-
-# Evidencias da validacao e das novas coletas da versao reorganizada.
-!/resultados/complementacao_2026-11-10_02c0765/
-!/resultados/complementacao_2026-11-10_02c0765/**

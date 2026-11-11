@@ -167,6 +167,6 @@ Docker `pp-lab`: a suíte registrada antes da coleta conjunta terminou com
 **142 PASS, 0 FAIL e 0 SKIP**, e a coleta produziu **175 observações**.
 
 Trata-se de evidência histórica, não de execução desta revisão documental.
-Consulte `resultados/issue10_desempenho_ambiente.txt` para saída, ambiente e
+Consulte `resultados/01_coletas/principal/issue10_desempenho_ambiente.txt` para saída, ambiente e
 hashes. Para validar a versão corrente após qualquer alteração executável,
 repita os comandos desta página e grave benchmarks em caminhos novos.

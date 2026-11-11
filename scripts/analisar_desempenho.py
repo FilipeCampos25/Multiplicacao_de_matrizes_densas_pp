@@ -17,7 +17,7 @@ KEY = ['ambiente', 'experimento', 'N_base', 'implementacao', 'N', 'trabalhadores
 STATS = KEY + ['repeticoes', 'tempo_medio_s', 'tempo_mediano_s', 'tempo_min_s',
               'tempo_max_s', 'desvio_padrao_s', 'cv_percentual', 'speedup', 'eficiencia',
               'speedup_relativo_1', 'eficiencia_relativa_1']
-GENERATED = {'desempenho_consolidado.csv', 'metricas_desempenho.csv', 'escalabilidade_fraca.csv'}
+DEFAULT_INPUT = ROOT/'resultados/01_coletas/principal/issue10_desempenho.csv'
 
 
 def finite(value, positive=False):
@@ -31,11 +31,13 @@ def compatible(a, b):
     return abs(a-b) <= 1e-6 + 1e-9 * max(abs(a), abs(b))
 
 
-def load(directory):
+def load(paths, base=None):
     rows, notes, sources, seen_files = [], [], [], set()
-    for path in sorted(directory.rglob('*.csv')):
-        if path.name in GENERATED or 'graficos' in path.parts:
-            continue
+    paths = [Path(path).resolve() for path in paths]
+    base = Path(base or ROOT).resolve()
+    for path in paths:
+        if not path.is_file():
+            raise ValueError(f'coleta selecionada nao existe: {path}')
         digest = hashlib.sha256(path.read_bytes()).hexdigest()
         if digest in seen_files:
             notes.append(f'{path.name}: copia identica ignorada (SHA-256).')
@@ -61,7 +63,10 @@ def load(directory):
                 except (ValueError, UnicodeError):
                     notes.append(f'{path.name}: metadados textuais; comparacoes restritas ao arquivo.')
             # Cada coleta e isolada por padrao. Somente o coletor conjunto associa implementacoes.
-            environment = path.relative_to(directory).as_posix()
+            try:
+                environment = path.relative_to(base).as_posix()
+            except ValueError:
+                environment = path.as_posix()
             sources.append({'arquivo': environment, 'sha256': digest,
                             'metadados': meta_path.name if meta_path.exists() else '',
                             'conteudo_metadados': metadata})
@@ -210,10 +215,10 @@ def graphics(metrics, weak, output):
         if row['experimento'] == 'forte':
             groups[(row['ambiente'], row['N'])].append(row)
     for (environment, n), rows in sorted(groups.items()):
-        tag = hashlib.sha256(environment.encode()).hexdigest()[:8]
         for field, kind, label in [('tempo_mediano_s', 'tempo', 'Tempo mediano (s)'),
                                    ('speedup', 'speedup', 'Speedup Tseq/Tp'),
                                    ('eficiencia', 'eficiencia', 'Eficiencia (%)'),
+                                   ('speedup', 'escalabilidade_forte', 'Speedup Tseq/Tp'),
                                    ('speedup', 'amdahl', 'Speedup Tseq/Tp')]:
             series = []
             for impl, schedule in sorted({(r['implementacao'], r['schedule']) for r in rows}):
@@ -235,7 +240,7 @@ def graphics(metrics, weak, output):
             if kind == 'amdahl':
                 for f in (.05, .10, .20):
                     series.append((f'Amdahl hipotetico f={f:.2f}', [(p, 1/(f+(1-f)/p)) for p in ps], True))
-            name = f'{kind}_{tag}_N{n}.svg'
+            name = f'{kind}_N{n}.svg'
             plot(output/name, f'{kind.capitalize()} | N={n} | {environment}', label, series)
             generated.append(name)
     wg = defaultdict(list)
@@ -247,7 +252,7 @@ def graphics(metrics, weak, output):
             subset = [r for r in rows if r['implementacao'] == impl and r['schedule'] == schedule]
             dims = ', '.join(f'{r["trabalhadores"]}:{r["N"]}' for r in sorted(subset, key=lambda r:r['trabalhadores']))
             series.append((f'{impl} {schedule} p:N={dims}', [(r['trabalhadores'], r['tempo_mediano_s']) for r in subset], False))
-        name = f'fraca_{hashlib.sha256(environment.encode()).hexdigest()[:8]}_base{base}.svg'
+        name = f'escalabilidade_fraca_Nbase{base}.svg'
         plot(output/name, f'Escalabilidade fraca | N_base={base}', 'Tempo mediano (s)', series)
         generated.append(name)
     return generated
@@ -255,13 +260,22 @@ def graphics(metrics, weak, output):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--input-dir', type=Path, default=ROOT/'resultados')
-    parser.add_argument('--output-dir', type=Path, default=ROOT/'resultados')
+    parser.add_argument('--input', type=Path, nargs='+', default=[DEFAULT_INPUT],
+                        help='coletas brutas selecionadas explicitamente')
+    parser.add_argument('--input-base', type=Path, default=ROOT/'resultados')
+    parser.add_argument('--output-dir', type=Path, default=ROOT/'resultados/02_analises/principal')
+    parser.add_argument('--graphics-dir', type=Path, default=ROOT/'resultados/03_graficos')
+    parser.add_argument('--expected-repetitions', type=int, default=5)
+    parser.add_argument('--expected-groups', type=int, default=35)
     args = parser.parse_args(argv)
-    rows, notes, sources = load(args.input_dir)
+    rows, notes, sources = load(args.input, args.input_base)
     if not rows:
         raise ValueError('Nenhuma observacao valida encontrada')
     metrics = summarize(rows)
+    if args.expected_repetitions and any(r['repeticoes'] != args.expected_repetitions for r in metrics):
+        raise ValueError(f'quantidade de repeticoes diferente de {args.expected_repetitions}')
+    if args.expected_groups and len(metrics) != args.expected_groups:
+        raise ValueError(f'quantidade de grupos: {len(metrics)}; esperado: {args.expected_groups}')
     weak = weak_metrics(metrics)
     for row in metrics:
         if row['repeticoes'] < 5:
@@ -278,7 +292,7 @@ def main(argv=None):
     write_csv(args.output_dir/'desempenho_consolidado.csv', RAW, rows)
     write_csv(args.output_dir/'metricas_desempenho.csv', STATS, metrics)
     write_csv(args.output_dir/'escalabilidade_fraca.csv', STATS + ['N_ideal', 'arredondamento', 'trabalho_relativo', 'eficiencia_fraca', 'speedup_escalado'], weak)
-    graphs = graphics(metrics, weak, args.output_dir/'graficos')
+    graphs = graphics(metrics, weak, args.graphics_dir)
     manifest = {'observacoes': len(rows), 'grupos': len(metrics), 'fontes': sources,
                 'avisos': notes, 'graficos': graphs}
     (args.output_dir/'analise_manifesto.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')

@@ -2,6 +2,7 @@
 """Valida e resume CSVs complementares de perfil sequencial e etapas MPI."""
 import argparse
 import csv
+import math
 import statistics
 import sys
 from pathlib import Path
@@ -28,7 +29,31 @@ def escrever(path, fields, rows):
 
 def analisar_sequencial(path):
     with path.open(newline="", encoding="utf-8") as stream:
-        rows = [r for r in csv.DictReader(stream) if r["status"] == "ok"]
+        reader = csv.DictReader(stream)
+        required = {"N", "repeticao", "total_s", "alocacao_s", "inicializacao_s",
+                    "multiplicacao_s", "checksum_s", "checksum", "status"}
+        missing = required - set(reader.fieldnames or [])
+        if missing:
+            raise ValueError("colunas sequenciais ausentes: " + ", ".join(sorted(missing)))
+        rows = [r for r in reader if r["status"] == "ok"]
+    if not rows:
+        raise ValueError("o CSV sequencial nao contem medicoes validas")
+    seen, checksums = set(), {}
+    for row in rows:
+        n, repetition = int(row["N"]), int(row["repeticao"])
+        if n <= 0 or repetition <= 0 or (n, repetition) in seen:
+            raise ValueError(f"N={n}/repeticao={repetition}: dimensao ou repeticao invalida/duplicada")
+        seen.add((n, repetition))
+        for field in ("total_s", "alocacao_s", "inicializacao_s", "multiplicacao_s", "checksum_s"):
+            value = float(row[field])
+            if not math.isfinite(value) or value < 0 or (field == "total_s" and value == 0):
+                raise ValueError(f"N={n}/repeticao={repetition}: {field} invalido")
+        checksum = float(row["checksum"])
+        if not math.isfinite(checksum):
+            raise ValueError(f"N={n}/repeticao={repetition}: checksum invalido")
+        reference = checksums.setdefault(n, checksum)
+        if abs(reference-checksum) > 1e-6 + 1e-9*max(abs(reference), abs(checksum)):
+            raise ValueError(f"N={n}: checksum divergente")
     result = []
     for n in sorted({int(r["N"]) for r in rows}):
         group = [r for r in rows if int(r["N"]) == n]
@@ -51,7 +76,7 @@ def analisar_mpi(path, expected_sizes=None, expected_processes=None,
         reader = csv.DictReader(stream)
         required = {"implementacao", "n", "processos", "repeticao", "tempo_s",
                     "scatterv_s", "bcast_s", "computacao_s", "gatherv_s",
-                    "linhas_min", "linhas_max", "status"}
+                    "linhas_min", "linhas_max", "checksum", "status"}
         missing = required - set(reader.fieldnames or [])
         if missing:
             raise ValueError("colunas MPI ausentes: " + ", ".join(sorted(missing)))
@@ -71,6 +96,7 @@ def analisar_mpi(path, expected_sizes=None, expected_processes=None,
                              ", ".join(f"N={n}/p={p}" for n, p in absent))
 
     baselines = {}
+    checksums = {}
     for n, processes in keys:
         if processes == 1:
             group = [r for r in rows if int(r["n"]) == n and int(r["processos"]) == 1]
@@ -91,6 +117,12 @@ def analisar_mpi(path, expected_sizes=None, expected_processes=None,
                 value = float(row[field])
                 if value < 0 or not (value < float("inf")):
                     raise ValueError(f"N={n}/p={processes}: {field} invalido")
+            checksum = float(row["checksum"])
+            if not math.isfinite(checksum):
+                raise ValueError(f"N={n}/p={processes}: checksum invalido")
+            reference = checksums.setdefault(n, checksum)
+            if abs(reference-checksum) > 1e-6 + 1e-9*max(abs(reference), abs(checksum)):
+                raise ValueError(f"N={n}/p={processes}: checksum divergente")
         total = estatisticas(group, "tempo_s")["mediana_s"]
         if total == 0:
             raise ValueError(f"N={n}/p={processes}: tempo total mediano igual a zero")
@@ -136,7 +168,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--sequencial", type=Path)
     parser.add_argument("--mpi", type=Path)
-    parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--output-dir", type=Path,
+                        default=Path(__file__).resolve().parents[1] /
+                        "resultados/02_analises/complementares")
     parser.add_argument("--expected-sizes", type=int, nargs="+")
     parser.add_argument("--expected-processes", type=int, nargs="+")
     parser.add_argument("--minimum-repetitions", type=int, default=1)

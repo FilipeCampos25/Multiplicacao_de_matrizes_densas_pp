@@ -1,4 +1,4 @@
-﻿# Análise experimental de desempenho — Issue #10
+# Análise experimental de desempenho — Issue #10
 
 ## 1. Objetivos e estado
 
@@ -38,7 +38,7 @@ tempo_s,checksum,status`, com etapas MPI adicionais. O analisador aceita esse
 formato sem depender do nome do arquivo.
 
 O histórico sequencial está em [perfilamento_sequencial.md](perfilamento_sequencial.md)
-e o histórico OpenMP possui [metadados](../resultados/openmp_ambiente.txt).
+e o histórico OpenMP possui [metadados](../resultados/01_coletas/complementares/openmp/openmp_ambiente.txt).
 As máquinas são diferentes: esses conjuntos ficam separados e não entram no
 numerador do speedup da coleta nova. `openmp_resumo.csv` usava uma thread como
 referência; essa métrica não é o speedup principal desta Issue.
@@ -64,9 +64,9 @@ benchmarks; a suíte anterior pode usá-la em casos pequenos de corretude.
 As afinidades dos runtimes não são idênticas, limitando atribuir as diferenças
 exclusivamente ao paradigma.
 
-Os [metadados da coleta](../resultados/issue10_desempenho_ambiente.txt) registram
+Os [metadados da coleta](../resultados/01_coletas/principal/issue10_desempenho_ambiente.txt) registram
 instantes UTC, CPU, compiladores, recursos, flags, variáveis, launcher, checksums,
-suíte e hashes SHA-256. O [manifesto](../resultados/analise_manifesto.json)
+suíte e hashes SHA-256. O [manifesto](../resultados/02_analises/principal/analise_manifesto.json)
 identifica fontes por SHA-256, avisos e a lista exata dos gráficos gerados.
 
 ## 4. Metodologia e tratamento
@@ -119,9 +119,9 @@ Medianas em segundos da coleta conjunta, cinco observações por célula.
 | 512 | 0,085741 | 0,101405 | 0,056621 | 0,033582 | 0,029449 | 0,091818 | 0,054075 | 0,047667 | 0,065587 |
 | 1024 | 1,043835 | 0,912507 | 0,522553 | 0,322968 | 0,274365 | 0,953225 | 0,593915 | 0,513422 | 0,652208 |
 
-![Tempos N=256](../resultados/graficos/tempo_cae72fda_N256.svg)
-![Tempos N=512](../resultados/graficos/tempo_cae72fda_N512.svg)
-![Tempos N=1024](../resultados/graficos/tempo_cae72fda_N1024.svg)
+![Tempos N=256](../resultados/03_graficos/tempo_N256.svg)
+![Tempos N=512](../resultados/03_graficos/tempo_N512.svg)
+![Tempos N=1024](../resultados/03_graficos/tempo_N1024.svg)
 
 As fontes históricas têm gráficos próprios. O baseline antigo teve medianas
 0,004798, 0,049412 e 0,542017 s; o sequencial N=256 sem ambiente identificado
@@ -154,12 +154,12 @@ Valores acima de 100% não foram truncados. Em p=1, código gerado, memória e
 variação temporal podem produzir S diferente de 1, sem comprovar
 superlinearidade causada por paralelismo. E não mede utilização de CPU.
 
-![Speedup N=256](../resultados/graficos/speedup_cae72fda_N256.svg)
-![Speedup N=512](../resultados/graficos/speedup_cae72fda_N512.svg)
-![Speedup N=1024](../resultados/graficos/speedup_cae72fda_N1024.svg)
-![Eficiência N=256](../resultados/graficos/eficiencia_cae72fda_N256.svg)
-![Eficiência N=512](../resultados/graficos/eficiencia_cae72fda_N512.svg)
-![Eficiência N=1024](../resultados/graficos/eficiencia_cae72fda_N1024.svg)
+![Speedup N=256](../resultados/03_graficos/speedup_N256.svg)
+![Speedup N=512](../resultados/03_graficos/speedup_N512.svg)
+![Speedup N=1024](../resultados/03_graficos/speedup_N1024.svg)
+![Eficiência N=256](../resultados/03_graficos/eficiencia_N256.svg)
+![Eficiência N=512](../resultados/03_graficos/eficiencia_N512.svg)
+![Eficiência N=1024](../resultados/03_graficos/eficiencia_N1024.svg)
 
 ## 7. Escalabilidade forte
 
@@ -204,7 +204,7 @@ implementação na série fraca. `S_escalado=p E_fraca` é uma métrica separada
 | 4 | 406 | 0,019154 | 59,25 | 0,022296 | 51,44 |
 | 8 | 512 | 0,025753 | 44,06 | 0,061093 | 18,77 |
 
-![Fraca — dimensões na legenda](../resultados/graficos/fraca_cae72fda_base256.svg)
+![Fraca — dimensões na legenda](../resultados/03_graficos/escalabilidade_fraca_Nbase256.svg)
 
 O tempo cresce: em p=8, E fraca foi 44,1% no OpenMP e 18,8% no MPI. O pequeno
 erro de arredondamento (menos de 0,43%) não afasta efeitos de memória, afinidade,
@@ -222,9 +222,9 @@ fração paralelizável. Os gráficos existentes usam cenários **hipotéticos**
 ajuste, `s=0,05`, `0,10` e `0,20`. Tracejados são referências, marcadores são
 dados agregados. Nenhuma curva é registrada como medição experimental.
 
-![Amdahl N=256](../resultados/graficos/amdahl_cae72fda_N256.svg)
-![Amdahl N=512](../resultados/graficos/amdahl_cae72fda_N512.svg)
-![Amdahl N=1024](../resultados/graficos/amdahl_cae72fda_N1024.svg)
+![Amdahl N=256](../resultados/03_graficos/amdahl_N256.svg)
+![Amdahl N=512](../resultados/03_graficos/amdahl_N512.svg)
+![Amdahl N=1024](../resultados/03_graficos/amdahl_N1024.svg)
 
 Em p=8, os cenários dão S=5,926, 4,706 e 3,333. OpenMP N=1024 (3,805) fica
 entre f=0,10/0,20; OpenMP N=256/512 e todos os MPI/p=8 ficam abaixo do cenário

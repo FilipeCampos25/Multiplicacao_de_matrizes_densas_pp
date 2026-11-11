@@ -73,7 +73,7 @@ SKIP**, antes da coleta conjunta de **175 observações**.
 
 Esses números são históricos e não foram reexecutados nesta atualização. Saída,
 ambiente, versões e hashes estão em
-`resultados/issue10_desempenho_ambiente.txt`; dados e interpretação estão em
-`resultados/issue10_desempenho.csv` e
+`resultados/01_coletas/principal/issue10_desempenho_ambiente.txt`; dados e interpretação estão em
+`resultados/01_coletas/principal/issue10_desempenho.csv` e
 [analise_desempenho.md](analise_desempenho.md). Alterações futuras de código
 devem ser validadas novamente em arquivo de coleta novo.

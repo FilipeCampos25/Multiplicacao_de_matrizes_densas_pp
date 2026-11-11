@@ -28,7 +28,8 @@ def main(argv=None):
     parser.add_argument('--repetitions', type=int, default=5)
     parser.add_argument('--weak-base', type=int, default=256)
     parser.add_argument('--seed', type=int, default=8510)
-    parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--output', type=Path,
+                        default=ROOT/'resultados/01_coletas/principal/coleta_desempenho.csv')
     args = parser.parse_args(argv)
     if min(args.sizes+args.workers+[args.repetitions, args.weak_base]) <= 0:
         parser.error('Parametros devem ser positivos')

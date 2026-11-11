@@ -162,7 +162,8 @@ def main(argv=None):
     parser.add_argument("--repetitions", type=int, default=5)
     parser.add_argument("--schedules", nargs="+", choices=["static", "dynamic", "guided"],
                         default=["static", "dynamic", "guided"])
-    parser.add_argument("--output", type=Path, default=ROOT / "resultados/openmp_desempenho.csv")
+    parser.add_argument("--output", type=Path,
+                        default=ROOT / "resultados/01_coletas/complementares/openmp_desempenho.csv")
     parser.add_argument("--timeout", type=float, default=120)
     parser.add_argument("--seed", type=int, default=8506)
     args = parser.parse_args(argv)

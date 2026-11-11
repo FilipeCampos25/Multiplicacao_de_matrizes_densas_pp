@@ -12,9 +12,9 @@
 
 Em 21/10/2026, a avaliação MPI estava preparada, mas o host então disponível não possuía compilador, launcher MPI, Docker ou distribuição WSL. Naquela data não havia medições MPI, e nenhuma foi inventada.
 
-Essa pendência foi resolvida em **22/10/2026** por uma coleta conjunta no serviço Docker `pp-lab`. O arquivo `resultados/issue10_desempenho.csv` contém **175 observações**: 15 sequenciais, 80 OpenMP e 80 MPI. Antes da coleta, a suíte funcional registrou **142 PASS, 0 FAIL e 0 SKIP**. Esses registros são evidências históricas e não foram executados novamente nesta revisão.
+Essa pendência foi resolvida em **22/10/2026** por uma coleta conjunta no serviço Docker `pp-lab`. O arquivo `resultados/01_coletas/principal/issue10_desempenho.csv` contém **175 observações**: 15 sequenciais, 80 OpenMP e 80 MPI. Antes da coleta, a suíte funcional registrou **142 PASS, 0 FAIL e 0 SKIP**. Esses registros são evidências históricas e não foram executados novamente nesta revisão.
 
-Ambiente, comandos, saída da suíte e hashes estão em `resultados/issue10_desempenho_ambiente.txt`; tabelas, estatísticas e interpretação estão em [analise_desempenho.md](analise_desempenho.md).
+Ambiente, comandos, saída da suíte e hashes estão em `resultados/01_coletas/principal/issue10_desempenho_ambiente.txt`; tabelas, estatísticas e interpretação estão em [analise_desempenho.md](analise_desempenho.md).
 
 ## Ambiente da coleta conjunta
 
