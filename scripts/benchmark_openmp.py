@@ -148,10 +148,10 @@ def summarize(rows, repetitions):
     return result
 
 
-def output_paths(output):
+def output_paths(output, analysis_dir):
     prefix = output.stem.removesuffix("_desempenho")
-    return {"raw": output, "summary": output.with_name(prefix + "_resumo.csv"),
-            "status": output.with_name(prefix + "_status.csv"),
+    return {"raw": output, "summary": analysis_dir / (prefix + "_resumo.csv"),
+            "status": analysis_dir / (prefix + "_status.csv"),
             "environment": output.with_name(prefix + "_ambiente.txt")}
 
 
@@ -163,7 +163,10 @@ def main(argv=None):
     parser.add_argument("--schedules", nargs="+", choices=["static", "dynamic", "guided"],
                         default=["static", "dynamic", "guided"])
     parser.add_argument("--output", type=Path,
-                        default=ROOT / "resultados/01_coletas/complementares/openmp_desempenho.csv")
+                        default=ROOT / "resultados/01_coletas/complementares/openmp/openmp_desempenho.csv")
+    parser.add_argument("--analysis-dir", type=Path,
+                        default=ROOT / "resultados/02_analises/complementares",
+                        help="diretorio dos CSVs derivados de resumo e status")
     parser.add_argument("--timeout", type=float, default=120)
     parser.add_argument("--seed", type=int, default=8506)
     args = parser.parse_args(argv)
@@ -174,7 +177,7 @@ def main(argv=None):
         parser.error("Dimensao excede os indices/int da inicializacao do baseline.")
     if any(len(values) != len(set(values)) for values in (args.sizes, args.threads, args.schedules)):
         parser.error("Listas nao podem conter valores duplicados.")
-    paths = output_paths(args.output.resolve())
+    paths = output_paths(args.output.resolve(), args.analysis_dir.resolve())
     if len(set(paths.values())) != len(paths):
         parser.error("Escolha um nome de CSV bruto diferente dos nomes auxiliares.")
     existing = [str(path) for path in paths.values() if path.exists()]
@@ -201,13 +204,15 @@ def main(argv=None):
           f"memoria disponivel={limits['memory_available_bytes']} bytes", flush=True)
 
     metadata = {"started_utc": datetime.now(timezone.utc).isoformat(),
-                "arguments": vars(args) | {"output": str(args.output)},
+                "arguments": vars(args) | {"output": str(args.output),
+                                           "analysis_dir": str(args.analysis_dir)},
                 "resources_before": limits, "platform": platform.platform(),
                 "os_release": read_text("/etc/os-release"), "openmp_environment": controlled,
                 "baseline_checksums": {}, "status": "RUNNING", "variant_preflight_cases": 0}
     rows, statuses = [], []
     rng = random.Random(args.seed)
-    paths["raw"].parent.mkdir(parents=True, exist_ok=True)
+    for path in paths.values():
+        path.parent.mkdir(parents=True, exist_ok=True)
     with ExitStack() as stack:
         # Modo x: inclusive em caso de concorrencia, nunca trunca uma coleta.
         files = {name: stack.enter_context(path.open("x", newline="", encoding="utf-8"))

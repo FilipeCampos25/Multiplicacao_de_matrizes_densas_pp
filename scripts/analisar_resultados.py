@@ -7,13 +7,19 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[1]
+
 
 def main() -> int:
     if len(sys.argv) not in (2, 3):
         print("Uso: python3 scripts/analisar_resultados.py ENTRADA.csv [RESUMO.csv]", file=sys.stderr)
         return 2
     entrada = Path(sys.argv[1])
-    saida = Path(sys.argv[2]) if len(sys.argv) == 3 else entrada.with_name(entrada.stem + "_resumo.csv")
+    saida = (Path(sys.argv[2]) if len(sys.argv) == 3 else
+             ROOT / "resultados/02_analises/complementares" / (entrada.stem + "_resumo.csv"))
+    if saida.exists():
+        print(f"Erro: resumo existente; escolha outro destino: {saida}", file=sys.stderr)
+        return 2
     grupos = defaultdict(list)
     with entrada.open(newline="", encoding="utf-8") as arquivo:
         leitor = csv.DictReader(arquivo)

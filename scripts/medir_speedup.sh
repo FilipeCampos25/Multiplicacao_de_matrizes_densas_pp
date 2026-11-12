@@ -10,7 +10,7 @@ N="${1:-512}"
 REPETICOES="${2:-5}"
 THREADS="${3:-1 2 4}"
 PROCESSOS="${4:-1 2 4}"
-ARQUIVO_CSV="${5:-resultados/benchmarks_automatizados.csv}"
+ARQUIVO_CSV="${5:-resultados/01_coletas/complementares/benchmarks_automatizados.csv}"
 MPI_RUN="${MPI_RUN:-mpirun}"
 MPI_RUN_ARGS="${MPI_RUN_ARGS:-}"
 
@@ -25,10 +25,15 @@ for ferramenta in make "$MPI_RUN"; do
     }
 done
 
+AMBIENTE="${ARQUIVO_CSV%.csv}_ambiente.txt"
+if [[ -e "$ARQUIVO_CSV" || -e "$AMBIENTE" ]]; then
+    echo "Erro: destino ja existe; escolha outro CSV para preservar a coleta anterior: $ARQUIVO_CSV" >&2
+    exit 2
+fi
+
 make all
 MPI_RUN="$MPI_RUN" MPI_RUN_ARGS="$MPI_RUN_ARGS" bash ./scripts/test_matmul.sh
 mkdir -p "$(dirname "$ARQUIVO_CSV")"
-AMBIENTE="${ARQUIVO_CSV%.csv}_ambiente.txt"
 {
     echo "data_utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
     echo "host=$(hostname)"

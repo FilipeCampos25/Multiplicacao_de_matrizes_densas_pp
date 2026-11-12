@@ -12,6 +12,8 @@ A coleta principal é [`01_coletas/principal/issue10_desempenho.csv`](01_coletas
 
 - `01_coletas/complementares/openmp/`: estudo OpenMP independente; não participa da análise oficial.
 - `01_coletas/complementares/perfil_mpi_2026-11-10/`: perfil sequencial e etapas MPI do snapshot `02c0765`; os resumos ficam em `02_analises/complementares/`. O proxy de comunicação MPI é explicitamente não aditivo e não representa partes de 100%.
+- `01_coletas/complementares/coleta_conjunta_2026-11-11/`: nova coleta conjunta no WSL2, 175 observações válidas; preservada como conjunto independente e não incorporada aos gráficos oficiais.
+- `01_coletas/complementares/openmp_2026-11-11/`: 180 medições OpenMP no mesmo host WSL2; resumo e status correspondentes ficam em `02_analises/complementares/openmp_2026-11-11/`.
 - `01_coletas/historicas_nao_comparaveis/`: ensaios antigos sem ambiente comparável; preservados, mas excluídos de speedup.
 
 ## Gráficos
