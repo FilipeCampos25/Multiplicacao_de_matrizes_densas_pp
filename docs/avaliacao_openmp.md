@@ -31,7 +31,7 @@ Compilador: **g++ 13.3.0**, com flags comuns
 `-O2 -std=c++17 -Wall -Wextra -Wpedantic -fopenmp` e ligação `-lm`.
 As variantes diferem somente em `-DMATMUL_BENCH_SCHEDULE=static|dynamic|guided`.
 Os comandos de compilação, hashes SHA-256, sistema, cgroups, recursos antes/depois
-e instantes UTC estão em [`openmp_ambiente.txt`](../resultados/openmp_ambiente.txt).
+e instantes UTC estão em [`openmp_ambiente.txt`](../resultados/01_coletas/complementares/openmp/openmp_ambiente.txt).
 
 Configuração controlada: `OMP_DYNAMIC=FALSE`, `OMP_PROC_BIND=close`,
 `OMP_PLACES=threads`, `OMP_WAIT_POLICY=PASSIVE`, `OMP_THREAD_LIMIT=8` e `LC_ALL=C`.
@@ -90,11 +90,11 @@ incompletos permanecem no bruto, mas não recebem resumo final.
 
 Arquivos da coleta:
 
-- [`openmp_desempenho.csv`](../resultados/openmp_desempenho.csv): cada repetição
+- [`openmp_desempenho.csv`](../resultados/01_coletas/complementares/openmp/openmp_desempenho.csv): cada repetição
   válida, equipe solicitada (`threads`), efetiva (`threads_utilizadas`) e ordem.
-- [`openmp_resumo.csv`](../resultados/openmp_resumo.csv): estatísticas e métricas.
-- [`openmp_status.csv`](../resultados/openmp_status.csv): PASS, SKIP ou FAIL e motivo.
-- [`openmp_ambiente.txt`](../resultados/openmp_ambiente.txt): metadados em JSON.
+- [`openmp_resumo.csv`](../resultados/02_analises/complementares/openmp_resumo.csv): estatísticas e métricas.
+- [`openmp_status.csv`](../resultados/02_analises/complementares/openmp_status.csv): PASS, SKIP ou FAIL e motivo.
+- [`openmp_ambiente.txt`](../resultados/01_coletas/complementares/openmp/openmp_ambiente.txt): metadados em JSON.
 
 ## 6. Comparação das estratégias de escalonamento
 

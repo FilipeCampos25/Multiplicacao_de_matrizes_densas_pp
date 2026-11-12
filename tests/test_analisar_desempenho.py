@@ -59,21 +59,24 @@ class AnalysisTests(unittest.TestCase):
             with self.subTest(invalid=invalid):
                 directory = self.load_fixture([base|{'tempo_s':invalid}])
                 with self.assertRaises(ValueError):
-                    a.load(directory)
+                    a.load([directory/'sample.csv'], directory)
         with self.assertRaisesRegex(ValueError,'duplicada'):
-            a.load(self.load_fixture([base,base]))
+            directory = self.load_fixture([base,base])
+            a.load([directory/'sample.csv'], directory)
 
     def test_checksum_mismatch(self):
         base = dict(implementacao='mpi',N=256,trabalhadores=2,repeticao=1,tempo_s=1.,checksum=10.)
         with self.assertRaisesRegex(ValueError,'checksum'):
-            a.load(self.load_fixture([base,base|{'repeticao':2,'checksum':20.}]))
+            directory = self.load_fixture([base,base|{'repeticao':2,'checksum':20.}])
+            a.load([directory/'sample.csv'], directory)
 
     def test_summary_not_individual_and_copy_not_duplicated(self):
         base = dict(implementacao='mpi',N=256,trabalhadores=2,repeticao=1,tempo_s=1.,checksum=10.)
         directory = self.load_fixture([base])
         (directory/'copy.csv').write_bytes((directory/'sample.csv').read_bytes())
         (directory/'resumo.csv').write_text('N,tempo_mediano_s\n256,1.0\n')
-        rows, notes, _ = a.load(directory)
+        rows, notes, _ = a.load([directory/'sample.csv', directory/'copy.csv',
+                                 directory/'resumo.csv'], directory)
         self.assertEqual(len(rows),1)
         self.assertTrue(any('copia identica' in s for s in notes))
         self.assertTrue(any('observacoes individuais' in s for s in notes))
@@ -82,7 +85,7 @@ class AnalysisTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             names = a.graphics(a.summarize([row(),row(p=2,t=1.)]), [], Path(directory))
             self.assertEqual(len(names),1)
-            self.assertTrue(names[0].startswith('tempo_'))
+            self.assertIn('tempo_N256.svg', names)
             ET.parse(Path(directory)/names[0])
             a.plot(Path(directory)/'amdahl.svg','Amdahl','S',[
                 ('Amdahl hipotetico f=0.1',[(1,1.),(2,1/(.1+.9/2))],True)])
@@ -102,7 +105,7 @@ class RepositoryArtifactsTests(unittest.TestCase):
         import statistics
         from collections import defaultdict
         root = Path(__file__).resolve().parents[1]
-        directory = root/'resultados'
+        directory = root/'resultados/02_analises/principal'
         if not (directory/'analise_manifesto.json').exists():
             self.skipTest('Execute make analyze-performance para auditar os artefatos')
         def read(name):
@@ -116,9 +119,9 @@ class RepositoryArtifactsTests(unittest.TestCase):
             groups[tuple(r[k] for k in a.KEY)].append(r)
             original = json.loads(r['dados_originais'])
             self.assertEqual(float(original['tempo_s']), float(r['tempo_s']))
-            self.assertTrue((directory/r['origem']).is_file())
+            self.assertTrue((root/'resultados'/r['origem']).is_file())
         for source in manifest['fontes']:
-            self.assertEqual(source['sha256'], hashlib.sha256((directory/source['arquivo']).read_bytes()).hexdigest())
+            self.assertEqual(source['sha256'], hashlib.sha256((root/'resultados'/source['arquivo']).read_bytes()).hexdigest())
         for m in metrics:
             times = [float(r['tempo_s']) for r in groups[tuple(m[k] for k in a.KEY)]]
             expected = dict(tempo_medio_s=statistics.mean(times),tempo_mediano_s=statistics.median(times),
@@ -139,7 +142,7 @@ class RepositoryArtifactsTests(unittest.TestCase):
             ref = next(r for r in weak if r['trabalhadores']=='1' and all(r[k]==w[k] for k in ('ambiente','implementacao','schedule','N_base')))
             self.assertTrue(math.isclose(float(w['eficiencia_fraca']),float(ref['tempo_mediano_s'])/float(w['tempo_mediano_s']),rel_tol=1e-12))
         for name in manifest['graficos']:
-            svg = directory/'graficos'/name
+            svg = root/'resultados/03_graficos'/name
             ET.parse(svg)
             if name.startswith('amdahl_'):
                 self.assertIn('hipotetico',svg.read_text())
@@ -149,6 +152,6 @@ class RepositoryArtifactsTests(unittest.TestCase):
         # Confere as celulas de tempo documentadas com o CSV, respeitando a procedencia.
         text = document.read_text(encoding='utf-8-sig')
         for m in metrics:
-            if m['ambiente']=='issue10_desempenho.csv':
+            if m['ambiente'].endswith('issue10_desempenho.csv'):
                 formatted = f"{float(m['tempo_mediano_s']):.6f}".replace('.',',')
                 self.assertIn(formatted,text)

@@ -17,8 +17,8 @@ make test-correctness
 Resultado exigido para prosseguir: compilação sem erro e a suíte corrente sem
 falhas. Se isso não acontecer, declarar a falha; não usar o registro histórico
 de `142 PASS` como se fosse a execução atual. Deixar abertos
-`resultados/graficos/speedup_cae72fda_N1024.svg` e
-`resultados/issue10_desempenho_ambiente.txt`.
+`resultados/03_graficos/speedup_N1024.svg` e
+`resultados/01_coletas/principal/issue10_desempenho_ambiente.txt`.
 
 ## 0:00–0:45 — problema e origem
 
@@ -78,7 +78,7 @@ pequenos, com tolerância numérica.
 
 ## 5:30–7:15 — speedup medido
 
-Abrir `resultados/graficos/speedup_cae72fda_N1024.svg` e declarar:
+Abrir `resultados/03_graficos/speedup_N1024.svg` e declarar:
 
 - dados da coleta conjunta de 22/10/2026, não da execução ao vivo;
 - cinco repetições válidas por configuração e mediana como medida principal;

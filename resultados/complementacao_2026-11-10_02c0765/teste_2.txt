@@ -1,4 +1,0 @@
-g++ -O2 -std=c++17 -Wall -Wextra -Wpedantic -o bin/base/01_matmul codigos/00_sequencial/01_matmul.cpp -lm
-g++ -O2 -std=c++17 -Wall -Wextra -Wpedantic -fopenmp -o bin/openmp/01_matmul_openmp codigos/01_openmp/01_matmul_openmp.cpp -lm
-g++ -O2 -std=c++17 -Wall -Wextra -Wpedantic -fopenmp -o bin/openmp/matmul_openmp codigos/01_openmp/matmul_openmp.cpp -lm
-mpic++ -O2 -std=c++17 -Wall -Wextra -Wpedantic -DOMPI_SKIP_MPICXX -o bin/mpi/matmul_mpi codigos/02_mpi/matmul_mpi.cpp -lm

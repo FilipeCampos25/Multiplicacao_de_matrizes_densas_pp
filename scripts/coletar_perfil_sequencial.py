@@ -41,7 +41,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--sizes", nargs="+", type=int, default=[256, 512, 1024])
     parser.add_argument("--repetitions", type=int, default=5)
-    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--output", type=Path,
+                        default=ROOT / "resultados/01_coletas/complementares/perfil_sequencial.csv")
     parser.add_argument("--compiler", default="g++")
     args = parser.parse_args()
     output = args.output.resolve()

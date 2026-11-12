@@ -8,7 +8,7 @@ ambiente oficial e aos resultados das Issues #8 e #9.
 > auditoria de 21/10/2026. As pendências de execução e de dados comparáveis foram
 > resolvidas posteriormente pela coleta conjunta de 22/10/2026: 175 observações
 > sequenciais/OpenMP/MPI, 142 testes de corretude aprovados e 21 gráficos. As
-> evidências estão em `resultados/issue10_desempenho.csv`, no arquivo de ambiente
+> evidências estão em `resultados/01_coletas/principal/issue10_desempenho.csv`, no arquivo de ambiente
 > correspondente e em [analise_desempenho.md](analise_desempenho.md). As frases
 > abaixo no presente histórico não descrevem o estado atual do repositório.
 
@@ -61,9 +61,9 @@ declarado pronto até a conclusão dos itens bloqueados abaixo.
 - `make test` e verificações de checksum não puderam ser executados.
 - Benchmarks OpenMP/MPI, speedup, eficiência, gráficos e ensaio ao vivo ainda
   dependem do ambiente oficial.
-- O CSV `resultados/benchmarks_automatizados.csv` contém somente cinco linhas
+- O CSV `resultados/01_coletas/historicas_nao_comparaveis/benchmarks_automatizados.csv` contém somente cinco linhas
   sequenciais para N=256; não sustenta comparação paralela.
-- `resultados/baseline_sequencial.csv` foi coletado fora do contêiner oficial,
+- `resultados/01_coletas/historicas_nao_comparaveis/baseline_sequencial.csv` foi coletado fora do contêiner oficial,
   conforme sua documentação, e não deve ser misturado com uma nova coleta.
 
 ## Comandos executados nesta auditoria

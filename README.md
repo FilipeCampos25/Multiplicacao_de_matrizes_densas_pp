@@ -496,10 +496,10 @@ O repositório preserva uma coleta conjunta datada de **22/10/2026**, contendo 1
 
 Arquivos principais:
 
-- [Coleta conjunta — CSV](resultados/issue10_desempenho.csv)
-- [Registro do ambiente experimental](resultados/issue10_desempenho_ambiente.txt)
+- [Coleta conjunta — CSV](resultados/01_coletas/principal/issue10_desempenho.csv)
+- [Registro do ambiente experimental](resultados/01_coletas/principal/issue10_desempenho_ambiente.txt)
 - [Análise experimental](docs/analise_desempenho.md)
-- [Gráficos de desempenho](resultados/graficos/)
+- [Gráficos de desempenho](resultados/03_graficos/)
 
 A documentação experimental apresenta 21 gráficos SVG, incluindo resultados de speedup, eficiência, escalabilidade e cenários de Amdahl.
 

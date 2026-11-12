@@ -31,16 +31,16 @@ a 10/11/2026 22:15–22:17 em America/Sao_Paulo.
 
 | Comando no Docker | Resultado | Log |
 | --- | --- | --- |
-| `docker compose build` | Saída 0 | [build](../resultados/complementacao_2026-11-10_02c0765/teste_0.txt) |
-| `make clean` | Saída 0, na cópia temporária | [clean](../resultados/complementacao_2026-11-10_02c0765/teste_1.txt) |
-| `make all` | Sequencial, duas versões OpenMP e MPI compilados | [compilação](../resultados/complementacao_2026-11-10_02c0765/teste_2.txt) |
-| `make test` | 24 comparações OpenMP e 9 MPI aprovadas | [integração](../resultados/complementacao_2026-11-10_02c0765/teste_3.txt) |
-| `make test-correctness` | PASS=142, FAIL=0, SKIP=0 | [corretude](../resultados/complementacao_2026-11-10_02c0765/teste_4.txt) |
-| `python3 -m unittest discover -s tests -v` | 168 testes, OK | [suíte geral](../resultados/complementacao_2026-11-10_02c0765/teste_5.txt) |
+| `docker compose build` | Saída 0 | [build](../resultados/04_validacao/resumo_testes.md) |
+| `make clean` | Saída 0, na cópia temporária | [clean](../resultados/04_validacao/resumo_testes.md) |
+| `make all` | Sequencial, duas versões OpenMP e MPI compilados | [compilação](../resultados/04_validacao/resumo_testes.md) |
+| `make test` | 24 comparações OpenMP e 9 MPI aprovadas | [integração](../resultados/04_validacao/resumo_testes.md) |
+| `make test-correctness` | PASS=142, FAIL=0, SKIP=0 | [corretude](../resultados/04_validacao/resumo_testes.md) |
+| `python3 -m unittest discover -s tests -v` | 168 testes, OK | [suíte geral](../resultados/04_validacao/resumo_testes.md) |
 
 As cinco últimas linhas foram executadas com `docker compose run --rm pp-lab`.
 Todos os comandos usaram `-f` apontando ao Compose da cópia temporária.
-Os [códigos de saída e horários](../resultados/complementacao_2026-11-10_02c0765/testes.json)
+Os [códigos de saída e horários](../resultados/04_validacao/resumo_testes.md)
 complementam os logs. Os 168 testes incluem os 142 casos funcionais; não devem
 ser somados como testes independentes.
 Algumas mensagens de stderr do Docker aparecem no log do PowerShell com o rótulo
@@ -48,9 +48,9 @@ Algumas mensagens de stderr do Docker aparecem no log do PowerShell com o rótul
 
 ## Perfilamento sequencial
 
-[CSV bruto](../resultados/complementacao_2026-11-10_02c0765/perfil_sequencial.csv),
-[ambiente e checksums](../resultados/complementacao_2026-11-10_02c0765/perfil_sequencial_ambiente.txt)
-e [resumo completo](../resultados/complementacao_2026-11-10_02c0765/resumos/perfil_sequencial_resumo.csv).
+[CSV bruto](../resultados/01_coletas/complementares/perfil_mpi_2026-11-10/perfil_sequencial.csv),
+[ambiente e checksums](../resultados/01_coletas/complementares/perfil_mpi_2026-11-10/perfil_sequencial_ambiente.txt)
+e [resumo completo](../resultados/02_analises/complementares/perfil_sequencial_resumo.csv).
 
 Foram executados um aquecimento e cinco repetições por N=256, 512 e 1024,
 com 15 observações válidas. Cada checksum foi comparado ao baseline original,
@@ -78,10 +78,10 @@ Não foram recalculados os gráficos ou as fórmulas de Amdahl dos dados histór
 
 ## MPI por etapas
 
-[CSV bruto](../resultados/complementacao_2026-11-10_02c0765/mpi_etapas.csv),
-[ambiente](../resultados/complementacao_2026-11-10_02c0765/mpi_etapas_ambiente.txt),
-[resumo por etapa](../resultados/complementacao_2026-11-10_02c0765/resumos/etapas_mpi_resumo.csv)
-e [resumo por configuração](../resultados/complementacao_2026-11-10_02c0765/resumos/configuracoes_mpi_resumo.csv).
+[CSV bruto](../resultados/01_coletas/complementares/perfil_mpi_2026-11-10/mpi_etapas.csv),
+[ambiente](../resultados/01_coletas/complementares/perfil_mpi_2026-11-10/mpi_etapas_ambiente.txt),
+[resumo por etapa](../resultados/02_analises/complementares/etapas_mpi_resumo.csv)
+e [resumo por configuração](../resultados/02_analises/complementares/configuracoes_mpi_resumo.csv).
 
 Foram executadas 12 configurações: N=256/512/1024, p=1/2/4/8,
 com um aquecimento e cinco repetições por configuração. O arquivo contém
@@ -106,13 +106,13 @@ sem controle exclusivo da carga do host.
 
 ## Reprodução e rastreabilidade
 
-O [protocolo executado](../resultados/complementacao_2026-11-10_02c0765/reproduzir_coletas.sh)
-registra os comandos e parâmetros das coletas. O [log](../resultados/complementacao_2026-11-10_02c0765/coletas.txt)
+O [protocolo executado](../resultados/01_coletas/complementares/perfil_mpi_2026-11-10/reproduzir_coletas.sh)
+registra os comandos e parâmetros das coletas. O [log](../resultados/04_validacao/resumo_testes.md)
 inclui ambiente, avisos e conclusão do analisador. Para repetir, use uma nova
 cópia extraída do Git e altere o destino `OUT` no protocolo para um diretório
 novo; não o execute sobre a pasta de evidências existente.
 
-O [manifesto desta complementação](../resultados/complementacao_2026-11-10_02c0765/manifesto.json)
+O [manifesto desta complementação](../resultados/01_coletas/complementares/perfil_mpi_2026-11-10/manifesto.json)
 registra o commit, imagem Docker, hashes das fontes executadas, binários,
 coletores e artefatos. Os logs de testes foram convertidos de UTF-16 do
 PowerShell para UTF-8, preservando o texto, antes do cálculo dos hashes.

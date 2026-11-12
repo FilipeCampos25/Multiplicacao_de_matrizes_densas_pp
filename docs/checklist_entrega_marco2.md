@@ -4,9 +4,9 @@
 
 | Item solicitado | Estado atual | Evidência |
 | --- | --- | --- |
-| Nova coleta de perfilamento sequencial | Executada: 15 medições válidas | [CSV](../resultados/complementacao_2026-11-10_02c0765/perfil_sequencial.csv) |
-| Nova coleta MPI por etapas | Executada: 60 medições MPI válidas e 15 referências sequenciais | [CSV](../resultados/complementacao_2026-11-10_02c0765/mpi_etapas.csv) |
-| Testes da versão reorganizada | Build, integração, 142 casos de corretude e 168 testes gerais aprovados | [Comandos e retornos](../resultados/complementacao_2026-11-10_02c0765/testes.json) |
+| Nova coleta de perfilamento sequencial | Executada: 15 medições válidas | [CSV](../resultados/01_coletas/complementares/perfil_mpi_2026-11-10/perfil_sequencial.csv) |
+| Nova coleta MPI por etapas | Executada: 60 medições MPI válidas e 15 referências sequenciais | [CSV](../resultados/01_coletas/complementares/perfil_mpi_2026-11-10/mpi_etapas.csv) |
+| Testes da versão reorganizada | Build, integração, 142 casos de corretude e 168 testes gerais aprovados | [Comandos e retornos](../resultados/04_validacao/resumo_testes.md) |
 
 A validação usa a revisão `02c0765` extraída do Git, com LF, em diretório
 temporário. Não atesta a execução dos scripts CRLF da pasta Windows original.
@@ -31,15 +31,15 @@ medição histórica foi repetida no código atual.
 | --- | --- | --- | --- |
 | Baseline original | **Concluído com evidência** | `codigos/baselines_sequenciais_CCO085/01_matmul.cpp`; `docs/architecture.md`; hash preservado conforme auditoria anterior | Manter atribuição ao professor e não confundir os dois `.cpp` locais não rastreados com material confirmado |
 | Perfilamento e hotspots | **Parcialmente concluído** | `docs/perfilamento_sequencial.md`; `codigos/instrumentacao/01_matmul_perfil.cpp`; `scripts/coletar_perfil_sequencial.py` | Instrumentação e protocolo existem, mas não há coleta quantitativa por etapa; o kernel `O(N³)` é hotspot fundamentado por complexidade, não por nova medição |
-| Fração paralelizável e Lei de Amdahl | **Parcialmente concluído** | `docs/analise_desempenho.md`, seção 9; `resultados/metricas_desempenho.csv`; `resultados/graficos/amdahl_*.svg` | Há estimativa efetiva invertida de speedup histórico e cenários teóricos; falta fração por etapas medida e a inferência incorpora overheads |
+| Fração paralelizável e Lei de Amdahl | **Parcialmente concluído** | `docs/analise_desempenho.md`, seção 9; `resultados/02_analises/principal/metricas_desempenho.csv`; `resultados/03_graficos/amdahl_*.svg` | Há estimativa efetiva invertida de speedup histórico e cenários teóricos; falta fração por etapas medida e a inferência incorpora overheads |
 | OpenMP e condições de corrida | **Concluído com evidência** | `codigos/01_openmp/*.cpp`; `docs/metodologia.md`; `docs/avaliacao_openmp.md`; testes históricos de 05/11 no `README.md` | A inspeção confirma divisão por linhas e escritas disjuntas; os testes não foram repetidos neste host |
 | MPI, decomposição e coletivas | **Concluído com evidência** | `codigos/02_mpi/matmul_mpi.cpp`; `docs/escalabilidade_mpi.md`; uso de `Scatterv`, `Bcast` e `Gatherv`; testes históricos de casos irregulares | Validação atual bloqueada por ausência de toolchain |
 | Corretude | **Parcialmente concluído** | `tests/test_correctness.py`; `tests/test_correctness_harness.py`; `docs/testes_corretude.md`; registro histórico `142 PASS` em 05/11 | Os hashes/fontes atuais são posteriores à coleta histórica; é necessária reexecução limpa dos testes obrigatórios |
-| Speedup e eficiência | **Concluído com evidência** | `resultados/metricas_desempenho.csv`; `docs/analise_desempenho.md`; gráficos `speedup_*` e `eficiencia_*` | Resultados pertencem à coleta histórica de 22/10, não às fontes atuais |
-| Escalabilidade forte | **Concluído com evidência** | `resultados/issue10_desempenho.csv`; `resultados/metricas_desempenho.csv`; `docs/analise_desempenho.md` | Evidência histórica em máquina única/Docker |
-| Escalabilidade fraca | **Concluído com evidência** | `resultados/escalabilidade_fraca.csv`; gráfico `fraca_*`; metodologia cúbica em `docs/analise_desempenho.md` | Explicar arredondamento de N e limites experimentais |
+| Speedup e eficiência | **Concluído com evidência** | `resultados/02_analises/principal/metricas_desempenho.csv`; `docs/analise_desempenho.md`; gráficos `speedup_*` e `eficiencia_*` | Resultados pertencem à coleta histórica de 22/10, não às fontes atuais |
+| Escalabilidade forte | **Concluído com evidência** | `resultados/01_coletas/principal/issue10_desempenho.csv`; `resultados/02_analises/principal/metricas_desempenho.csv`; `docs/analise_desempenho.md` | Evidência histórica em máquina única/Docker |
+| Escalabilidade fraca | **Concluído com evidência** | `resultados/02_analises/principal/escalabilidade_fraca.csv`; gráfico `fraca_*`; metodologia cúbica em `docs/analise_desempenho.md` | Explicar arredondamento de N e limites experimentais |
 | Overhead de comunicação MPI | **Parcialmente concluído** | `docs/escalabilidade_mpi.md`; `docs/analise_desempenho.md`; `scripts/benchmark_mpi.sh`; `resultados/mpi_etapas_complementar_bloqueio_2026-11-10.txt` | Instrumentação por etapas foi preparada, mas a coleta foi bloqueada; não há quantificação experimental separada de comunicação |
-| Gráficos e resultados | **Concluído com evidência** | `resultados/graficos/` (21 SVGs); `resultados/analise_manifesto.json`; teste de procedência de artefatos | Preservar dados históricos e não apresentá-los como coleta atual |
+| Gráficos e resultados | **Concluído com evidência** | `resultados/03_graficos/` (21 SVGs); `resultados/02_analises/principal/analise_manifesto.json`; teste de procedência de artefatos | Preservar dados históricos e não apresentá-los como coleta atual |
 | Makefile e Docker | **Parcialmente concluído** | `Makefile`, `Dockerfile`, `docker-compose.yml`, `docs/compilacao.md`; comandos cruzados por inspeção | Docker/Make não estão disponíveis neste host; validação limpa atual não foi executada |
 | Scripts e CSVs | **Concluído com evidência** | scripts de coleta, benchmark e análise; `resultados/*.csv` | Nova instrumentação de perfil/MPI ainda carece de execução no ambiente oficial |
 | README | **Concluído com evidência** | `README.md`; comandos e caminhos conferidos com o `Makefile`; medições históricas separadas da auditoria atual | Revalidar comandos em Docker antes da entrega |

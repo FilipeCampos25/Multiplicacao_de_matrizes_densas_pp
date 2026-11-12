@@ -1,9 +1,0 @@
-docker.exe :  Network source_default  Creating
-No linha:21 caractere:3
-+   & docker compose -f $compose @arguments 2>&1 | Tee-Object -FilePath ...
-+   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : NotSpecified: ( Network source_default  Creating:String) [], RemoteException
-    + FullyQualifiedErrorId : NativeCommandError
- 
- Network source_default  Created
-rm -rf bin
