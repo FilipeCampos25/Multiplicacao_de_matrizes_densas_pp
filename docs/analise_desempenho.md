@@ -14,8 +14,9 @@ e permanece restrito à coleta OpenMP anterior; não há comparação conjunta n
 > `codigos/00_sequencial/01_matmul.cpp`. Os caminhos históricos abaixo e nos
 > metadados de `resultados/` foram preservados como registro da coleta.
 
-O baseline original `codigos/baselines_sequenciais_CCO085/01_matmul.cpp`
-permaneceu intacto. O OpenMP avaliado é `matmul_openmp.cpp`, variante `static`,
+O baseline original `codigos/00_sequencial/01_matmul.cpp` permaneceu intacto;
+o caminho antigo que aparece nos metadados é histórico. O OpenMP avaliado é
+`matmul_openmp.cpp`, variante `static`,
 que distribui linhas por threads. `01_matmul_openmp.cpp` também está disponível
 e passou na suíte de corretude, mas não integra os tempos desta coleta.
 O MPI `matmul_mpi.cpp` distribui linhas com `Scatterv`, replica B com `Bcast`
@@ -30,7 +31,10 @@ e reúne C com `Gatherv`, equilibrando diferenças em até uma linha.
 | `openmp_resumo.csv` | 48 agregados | Não convertido em repetições nem duplicado |
 | `openmp_status.csv` | 48 status | Não tratado como tempo |
 
-Total consolidado: **435 observações individuais e 87 grupos estatísticos**.
+O inventário histórico soma **435 observações individuais e 87 grupos
+estatísticos**, mas esses ambientes não são combinados. Os artefatos principais
+atuais consolidam exclusivamente as **175 observações e 35 grupos** de
+`issue10_desempenho.csv`.
 Todos os tempos são segundos; não houve conversão de unidades nem exclusão de
 outliers. Não havia CSV MPI antes desta Issue. O formato preparado em
 `benchmark_mpi.sh` foi inspecionado: `implementacao,n,processos,repeticao,
@@ -236,12 +240,15 @@ produzir outro valor. Não se aplica diretamente à série fraca, cujo problema 
 ### 9.1 Escopos que não podem ser misturados
 
 O baseline original cronometra somente o kernel de multiplicação. O perfilamento
-complementar preparado na Tarefa 1 separa alocação, inicialização, multiplicação e
-checksum, mas **não foi executado**: não existe em `resultados/` um CSV de etapas.
-Logo, não há fração serial medida por etapas e não seria válido dividir os tempos
-quadráticos pelo tempo total da aplicação para declarar o limite do kernel.
-Alocação, inicialização e checksum também ficam fora dos intervalos OpenMP e MPI
-comparados nesta seção.
+complementar separou tempo total, alocação, inicialização, multiplicação e checksum
+em cinco repetições por N. A multiplicação representou 90,60% (N=256), 94,12%
+(N=512) e 97,39% (N=1024) do tempo total mediano instrumentado. A fonte é
+[`perfil_sequencial.csv`](../resultados/01_coletas/complementares/perfil_mpi_2026-11-10/perfil_sequencial.csv),
+com [resumo](../resultados/02_analises/complementares/perfil_sequencial_resumo.csv).
+Esses percentuais confirmam o hotspot no programa instrumentado, mas **não medem
+diretamente a fração paralelizável do kernel**: o trecho pode conter trabalho ou
+efeitos seriais e usa fronteira de tempo diferente da coleta principal. Alocação,
+inicialização e checksum ficam fora dos intervalos OpenMP/MPI comparados aqui.
 
 O speedup principal, `Tseq_original/Tp`, compara fontes diferentes e resulta em
 `S(1) != 1`. Para inverter Amdahl usa-se, portanto, somente
@@ -323,10 +330,14 @@ MPI foi executado em memória compartilhada numa máquina, sem rede entre nós.
 Scatterv/Bcast/Gatherv e esperas entram no total. Na série fraca, N=323/p=2
 distribui 162/161 linhas e N=406/p=4 distribui 102/102/101/101; os casos fortes
 são divisíveis. Equilíbrio de linhas não garante igualdade de tempo. A coleta
-conjunta não registra etapas MPI separadamente: não quantificamos quanto da
-regressão é comunicação. O executável e `benchmark_mpi.sh` já possuem a
-instrumentação necessária; a coleta complementar permanece pendente porque o
-host desta revisão não possui MPI, compilador C++, Docker ou distribuição WSL.
+conjunta não registra etapas MPI separadamente, por isso não atribuímos sua
+regressão a uma coletiva específica. Uma coleta complementar posterior registrou
+60 medições MPI de `Scatterv`, `Bcast`, computação e `Gatherv`, além de 15
+referências sequenciais, em revisão e ambiente próprios. Ela evidencia custos de
+comunicação, espera e sincronização variáveis; como cada etapa usa o máximo entre
+ranks, possivelmente de ranks diferentes, a soma dos máximos não decompõe o total.
+Veja o [CSV bruto](../resultados/01_coletas/complementares/perfil_mpi_2026-11-10/mpi_etapas.csv)
+e o [resumo](../resultados/02_analises/complementares/etapas_mpi_resumo.csv).
 
 Cinco repetições, virtualização compartilhada, saída com resolução de
 microssegundos, ausência de intervalos de confiança e afinidades diferentes
@@ -334,6 +345,10 @@ limitam as conclusões. Queda de speedup não comprova gargalo de cache, memóri
 comunicação ou temperatura. Não houve coleta conjunta N=2048 nem teste em cluster.
 
 ## 11. Reprodução e conclusão
+
+A fundamentação de Amdahl, escalabilidade, OpenMP, MPI e localidade de memória
+está consolidada em [referências técnicas](referencias.md). Não foi atribuída ao
+professor nenhuma indicação bibliográfica sem evidência no material versionado.
 
 Somente analisar dados existentes, sem executar benchmarks:
 
@@ -346,7 +361,7 @@ python3 scripts/analisar_desempenho.py
 Coletar novos dados, exigindo destino inédito:
 
 ```bash
-docker compose run --rm pp-lab make collect-performance BENCHMARK_ARGS='--output resultados/coleta_nova_desempenho.csv'
+docker compose run --rm pp-lab make collect-performance BENCHMARK_ARGS='--output resultados/01_coletas/complementares/coleta_nova_desempenho.csv'
 # Opcionais: --sizes 256 512 1024 2048 --workers 1 2 4 8
 # --repetitions 5 --weak-base 256 --seed 8510
 ```
@@ -357,8 +372,8 @@ sequencial, sem gravar repetições de Tseq; o MPI anterior não coleta OpenMP o
 série fraca intercalada. Os scripts anteriores foram preservados.
 
 O analisador aceita `--input-dir` e `--output-dir`, grava três CSVs e manifesto,
-e gera **21 SVGs** sem dependências externas: 13 conjuntos (quatro tipos por N e
-um de fraca), quatro do histórico OpenMP e quatro sequenciais isolados.
+e gera **16 SVGs** sem dependências externas: cinco tipos por dimensão
+(tempo, speedup, eficiência, escalabilidade forte e Amdahl) e um de escalabilidade fraca.
 Cada gráfico tem título, eixos, unidades, legenda e referências identificadas.
 O manifesto enumera os gráficos da execução atual; arquivos antigos fora da
 lista não devem ser interpretados como resultados atuais.
@@ -368,27 +383,25 @@ recalculados sem alterar brutos. Este documento é uma fotografia da coleta
 `issue10_desempenho.csv`; atualize tabelas e discussão ao relatar novas coletas,
 sem substituir silenciosamente sua procedência.
 
-Para perfilamento por trechos e etapas MPI, sem recriar os 21 SVGs:
+Para perfilamento por trechos e etapas MPI, sem recriar os 16 SVGs:
 
 ```bash
 python3 scripts/coletar_perfil_sequencial.py --sizes 256 512 1024 \
-  --repetitions 5 --output resultados/perfil_sequencial_complementar.csv
+  --repetitions 5 --output resultados/01_coletas/complementares/perfil_sequencial_novo.csv
 DIMENSOES="256 512 1024" PROCESSOS="1 2 4 8" \
-  bash scripts/benchmark_mpi.sh 5 resultados/mpi_etapas_complementar.csv
+  bash scripts/benchmark_mpi.sh 5 resultados/01_coletas/complementares/mpi_etapas_novo.csv
 python3 scripts/analisar_complementacao.py \
-  --sequencial resultados/perfil_sequencial_complementar.csv \
-  --mpi resultados/mpi_etapas_complementar.csv \
+  --sequencial resultados/01_coletas/complementares/perfil_sequencial_novo.csv \
+  --mpi resultados/01_coletas/complementares/mpi_etapas_novo.csv \
   --expected-sizes 256 512 1024 \
   --expected-processes 1 2 4 8 --minimum-repetitions 5 \
-  --output-dir resultados/complementacao_marco2
+  --output-dir resultados/02_analises/complementares/complementacao_nova
 ```
 
-Esses comandos exigem destinos inéditos. Nesta revisão eles não foram executados
-por ausência das ferramentas requeridas; não há novos resultados experimentais.
-Uma nova verificação em 10/11/2026 encontrou Python 3.12, mas não encontrou
-`mpirun`, `mpiexec`, `mpic++`, `g++` ou Docker; o WSL está presente apenas como
-componente do Windows e informa que não há distribuição instalada. O registro
-está em `resultados/mpi_etapas_complementar_bloqueio_2026-11-10.txt`.
+Esses comandos exigem destinos inéditos. A tentativa inicial no host Windows foi
+bloqueada, mas a execução posterior em Docker sobre a revisão `02c0765` produziu
+as coletas complementares preservadas em `perfil_mpi_2026-11-10/`. Elas não são
+misturadas à coleta principal nem usadas para recalcular seu speedup.
 
 O analisador complementar agora rejeita colunas ausentes, configurações ou
 repetições incompletas, repetições duplicadas e cargas incompatíveis com a
@@ -415,7 +428,7 @@ conclusões locais, sem prova de causa dos gargalos ou superioridade geral.
 |---|---|
 | 1. Inspeção | Concluído: fontes, scripts, CSVs, docs, Makefile, Docker e testes |
 | 2. Sistema | Concluído: Python padrão, validação, estatísticas e SVG |
-| 3. Consolidação | Concluído: 435 observações com procedência e isolamento |
+| 3. Consolidação | Concluído: 175 observações oficiais; conjuntos complementares/históricos preservados e isolados |
 | 4. Metodologia | Concluído: 175 novas medições, cinco repetições, aquecimento, checksums e ordem intercalada |
 | 5. Speedup | Concluído: Tseq original na mesma coleta; métricas relativas separadas |
 | 6. Eficiência | Concluído: S/p, decimal e percentual, sem truncamento |
@@ -424,7 +437,7 @@ conclusões locais, sem prova de causa dos gargalos ou superioridade geral.
 | 9. Amdahl | Parcial: fração efetiva inferida por configuração e Smax formal; fração por etapas do kernel pendente de coleta |
 | 10. Gráficos | Concluído: cinco categorias, SVGs e históricos separados |
 | 11. CSVs | Concluído: consolidado, métricas e fraca reproduzíveis |
-| 12. Gargalos | Discussão medida/hipótese preservada; perfilamento específico preparado, mas não executado neste host |
+| 12. Gargalos | Perfilamento complementar medido; causas de cache/comunicação permanecem hipóteses quando os dados não as isolam |
 | 13. Documento | Concluído: tabelas, gráficos, metodologia e limites |
 | 14. Integração | Concluído: alvos distintos de análise e coleta |
 | 15. Ausências | MPI medido; lacunas históricas preservadas sem referência artificial |

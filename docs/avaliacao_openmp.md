@@ -244,12 +244,12 @@ Os arquivos entregues já existem: **uma repetição desse comando será recusad
 para protegê-los**. Para uma nova coleta, escolha outro nome, por exemplo:
 
 ```bash
-docker compose run --rm -T pp-lab make benchmark-openmp 'BENCHMARK_ARGS=--sizes 256 512 1024 2048 --output resultados/openmp_nova_desempenho.csv'
+docker compose run --rm -T pp-lab make benchmark-openmp 'BENCHMARK_ARGS=--sizes 256 512 1024 2048 --output resultados/01_coletas/complementares/openmp_nova/openmp_desempenho.csv --analysis-dir resultados/02_analises/complementares/openmp_nova'
 ```
 
 Também é possível compilar com `make benchmark-openmp-build` e executar
 `python3 scripts/benchmark_openmp.py --sizes 256 512 1024 --threads 1 2 4 8
---repetitions 5 --schedules static dynamic guided --output resultados/outra_desempenho.csv`
+--repetitions 5 --schedules static dynamic guided --output resultados/01_coletas/complementares/openmp_nova/openmp_desempenho.csv --analysis-dir resultados/02_analises/complementares/openmp_nova`
 em uma única linha. Requer Python 3.9+ e apenas bibliotecas padrão. O timeout
 padrão é 120 s por execução (`--timeout`); a suíte anterior tem limite de 300 s.
 Falhas encerram a coleta com código não zero e preservam os dados já válidos.

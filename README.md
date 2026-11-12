@@ -339,6 +339,10 @@ Os testes incluem verificações que asseguram a rejeição de resultados incorr
 > [evidências da complementação](docs/complementacao_validada.md), incluindo
 > a distinção entre a cópia versionada LF e os scripts CRLF da pasta local.
 > A seção abaixo mantém o registro histórico de 05/11.
+>
+> **Validação final de 12/11/2026:** no serviço Docker atual, `make all`,
+> `make test`, `make test-correctness` e a suíte geral passaram. Foram 142 casos
+> de corretude e 169 testes gerais, sem falhas ou casos ignorados.
 
 As implementações foram compiladas e testadas em ambiente Windows com Docker Desktop e contêiner Linux.
 
@@ -454,7 +458,7 @@ Esses experimentos são analisados separadamente, respeitando suas diferentes re
 ```bash
 make collect-performance BENCHMARK_ARGS="--sizes 256 512 1024 \
   --workers 1 2 4 8 --repetitions 5 --weak-base 256 \
-  --output resultados/nova_coleta.csv"
+  --output resultados/01_coletas/complementares/coleta_conjunta_nova.csv"
 ```
 
 O coletor utiliza uma organização experimental que inclui medições das implementações disponíveis e verificações de consistência.
@@ -467,7 +471,8 @@ O caminho informado em `--output` deve ser novo. O coletor recusa sobrescrever u
 make benchmark-openmp BENCHMARK_ARGS="--sizes 256 512 1024 \
   --threads 1 2 4 8 --repetitions 5 \
   --schedules static dynamic guided \
-  --output resultados/openmp_nova_desempenho.csv"
+  --output resultados/01_coletas/complementares/openmp_nova/openmp_desempenho.csv \
+  --analysis-dir resultados/02_analises/complementares/openmp_nova"
 ```
 
 O benchmark permite investigar o comportamento das diferentes políticas de escalonamento.
@@ -501,14 +506,15 @@ Arquivos principais:
 - [Análise experimental](docs/analise_desempenho.md)
 - [Gráficos de desempenho](resultados/03_graficos/)
 
-A documentação experimental apresenta 21 gráficos SVG, incluindo resultados de speedup, eficiência, escalabilidade e cenários de Amdahl.
+A documentação experimental apresenta 16 gráficos SVG, incluindo resultados de speedup, eficiência, escalabilidade e cenários de Amdahl.
 
 As complementações de novembro estão registradas separadamente:
 
 - [Perfilamento sequencial](docs/perfilamento_sequencial.md): instrumentação e protocolo por etapas; a [nova coleta quantitativa](docs/complementacao_validada.md) foi executada em 10/11/2026.
 - [Análise experimental](docs/analise_desempenho.md): estimativa efetiva de Amdahl derivada do speedup histórico, com suas limitações.
-- [Escalabilidade MPI](docs/escalabilidade_mpi.md): instrumentação para separar cálculo e coletivas; a execução foi bloqueada no host da auditoria.
+- [Escalabilidade MPI](docs/escalabilidade_mpi.md): instrumentação e 60 medições complementares por etapas, preservadas separadamente da coleta principal.
 - [Checklist final do Marco 2](docs/checklist_entrega_marco2.md): estado por requisito, evidências, testes e pendências em 10/11/2026.
+- [Referências técnicas](docs/referencias.md): fontes acadêmicas e padrões oficiais usados na fundamentação.
 
 Nas medições documentadas, o OpenMP apresentou ganhos de desempenho com múltiplas threads, mas com redução de eficiência em parte das configurações. O MPI apresentou comportamento dependente da dimensão e do número de processos, com regressões ao aumentar de quatro para oito processos em determinados casos.
 

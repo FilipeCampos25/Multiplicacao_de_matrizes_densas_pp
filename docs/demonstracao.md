@@ -67,14 +67,16 @@ não habilitar sobresubscrição silenciosamente.
 ## 4:30–5:30 — comparação de corretude
 
 ```bash
-MATMUL_DUMP=1 ./bin/base/01_matmul 3
+./bin/base/01_matmul 3
 MATMUL_DUMP=1 OMP_NUM_THREADS=4 ./bin/openmp/matmul_openmp 3 --verify
 MATMUL_DUMP=1 mpirun -np 4 ./bin/mpi/matmul_mpi 3 --verify
 ```
 
-Comparar os nove elementos e o checksum. Explicar que checksum é triagem; a
-metodologia em `docs/testes_corretude.md` também compara elementos para casos
-pequenos, com tolerância numérica.
+O baseline original não implementa `MATMUL_DUMP`; mostrar nele o checksum e o
+tempo. Nas duas versões paralelas, mostrar os nove elementos, `--verify` e o
+mesmo checksum. Explicar que a suíte executada na preparação compara esses
+elementos com uma referência Python independente e que checksum isolado é
+apenas triagem.
 
 ## 5:30–7:15 — speedup medido
 

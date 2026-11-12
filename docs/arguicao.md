@@ -87,12 +87,12 @@ incluem espera. A soma dos máximos não é uma decomposição exata do caminho 
 **Qual limitação experimental deve ser declarada?**  A coleta conjunta de
 22/10/2026 contém baseline, OpenMP e MPI comparáveis no mesmo ambiente, mas os
 hashes atuais do Makefile e das fontes OpenMP/MPI diferem dos registrados nessa
-coleta. Portanto, os resultados são históricos e a regressão funcional dos
-fontes atuais no ambiente oficial permanece pendente. Testes bloqueados por
-falta de ferramentas não contam como aprovados.
+coleta. Portanto, os resultados são históricos e não validam desempenho dos
+fontes atuais. Em 12/11/2026, porém, a regressão funcional atual passou no Docker:
+142 casos de corretude e 169 testes gerais, sem falhas ou casos ignorados.
 
-**Quais melhorias futuras são legítimas?**  Concluir a regressão no contêiner,
-coletar MPI no mesmo ambiente, aumentar a cobertura de entradas inválidas e,
+**Quais melhorias futuras são legítimas?**  Repetir benchmarks comparáveis na
+revisão atual quando necessário, aumentar a cobertura de entradas inválidas e,
 somente em experimentos separados, avaliar afinidade ou tiling. Matrizes
 retangulares, Strassen e uma implementação híbrida não pertencem ao escopo da
 comparação atual.

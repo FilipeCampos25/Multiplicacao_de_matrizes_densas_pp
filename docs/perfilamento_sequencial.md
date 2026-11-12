@@ -51,13 +51,17 @@ a interferências do sistema. O desvio-padrão, mínimo e máximo expõem a disp
 
 ## Estado da complementação e hotspots
 
-Em 10 de novembro de 2026, o host disponível não tinha Docker, compilador C++ nem
-WSL instalados. Por isso, a coleta real não pôde ser executada e nenhum novo arquivo
-de resultados foi criado. A tabela exigida por etapa permanece pendente:
+Uma primeira tentativa em 10 de novembro de 2026 foi bloqueada no host Windows.
+Depois, a coleta foi executada em Docker sobre a revisão `02c0765`; os dados
+brutos e o ambiente estão em
+`resultados/01_coletas/complementares/perfil_mpi_2026-11-10/` e o resumo em
+`resultados/02_analises/complementares/perfil_sequencial_resumo.csv`.
 
 | N | Etapa | Média | Mediana | Desvio-padrão | Participação |
 |---:|---|---:|---:|---:|---:|
-| 256, 512 e 1024 | alocação, inicialização, multiplicação e checksum | **pendente de medição real** | **pendente** | **pendente** | **pendente** |
+| 256 | multiplicação | 0,007178 s | 0,007390 s | 0,000813 s | 90,60% |
+| 512 | multiplicação | 0,051235 s | 0,051046 s | 0,001801 s | 94,12% |
+| 1024 | multiplicação | 0,532086 s | 0,538348 s | 0,040020 s | 97,39% |
 
 A complexidade indica a multiplicação (`O(N³)`) como hotspot provável, enquanto
 as demais etapas são `O(N²)`. Isso é uma hipótese baseada na estrutura do código,
@@ -72,11 +76,11 @@ Na raiz do repositório, use um nome novo para não sobrescrever resultados hist
 docker compose build pp-lab
 docker compose run --rm pp-lab python3 scripts/coletar_perfil_sequencial.py \
   --sizes 256 512 1024 --repetitions 5 \
-  --output resultados/perfil_sequencial_etapas_2026-11-10.csv
+  --output resultados/01_coletas/complementares/perfil_sequencial_nova.csv
 
 docker compose run --rm pp-lab python3 scripts/analisar_complementacao.py \
-  --sequencial resultados/perfil_sequencial_etapas_2026-11-10.csv \
-  --output-dir resultados/perfil_sequencial_etapas_2026-11-10_resumo
+  --sequencial resultados/01_coletas/complementares/perfil_sequencial_nova.csv \
+  --output-dir resultados/02_analises/complementares/perfil_sequencial_nova
 ```
 
 Os arquivos esperados são o CSV bruto, o arquivo

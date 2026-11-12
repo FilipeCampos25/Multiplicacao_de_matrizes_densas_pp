@@ -56,7 +56,7 @@ Para produzir uma nova coleta sem alterar os resultados históricos:
 ```bash
 make collect-performance BENCHMARK_ARGS="--sizes 256 512 1024 \
   --workers 1 2 4 8 --repetitions 5 --weak-base 256 \
-  --output resultados/nova_coleta.csv"
+  --output resultados/01_coletas/complementares/coleta_conjunta_nova.csv"
 python3 scripts/analisar_desempenho.py
 ```
 
@@ -83,13 +83,13 @@ sobrescrevê-lo, execute em Linux com GCC, Open MPI e recursos adequados:
 ```bash
 DIMENSOES="256 512 1024" PROCESSOS="1 2 4 8" \
 MPI_RUN_ARGS="--use-hwthread-cpus --bind-to hwthread" \
-bash scripts/benchmark_mpi.sh 5 resultados/mpi_etapas_complementar.csv
+bash scripts/benchmark_mpi.sh 5 resultados/01_coletas/complementares/mpi_etapas_nova.csv
 
 python3 scripts/analisar_complementacao.py \
-  --mpi resultados/mpi_etapas_complementar.csv \
+  --mpi resultados/01_coletas/complementares/mpi_etapas_nova.csv \
   --expected-sizes 256 512 1024 \
   --expected-processes 1 2 4 8 --minimum-repetitions 5 \
-  --output-dir resultados/complementacao_marco2
+  --output-dir resultados/02_analises/complementares/mpi_etapas_nova
 ```
 
 O analisador valida a presença das 12 configurações, ao menos cinco repetições
@@ -101,9 +101,9 @@ marcado como não aditivo.
 O resumo produzido contém medianas e razões etapa/tempo total para cada N e p.
 Essas razões ajudam a comparar configurações, mas não formam uma decomposição
 aditiva: o máximo de cada etapa pode pertencer a ranks diferentes, e uma coletiva
-inclui espera causada por desbalanceamento anterior. Neste host não havia
-`mpic++`, `mpirun`, Docker ou distribuição WSL, então a coleta complementar não
-foi executada e o CSV histórico permaneceu intacto. A nova tentativa de
-**10/11/2026** confirmou o mesmo bloqueio; o diagnóstico está em
-`resultados/mpi_etapas_complementar_bloqueio_2026-11-10.txt`. Portanto, a análise
-quantitativa por etapa continua pendente e nenhum gráfico de etapas foi gerado.
+inclui espera causada por desbalanceamento anterior. A tentativa inicial no host
+Windows foi bloqueada, mas a coleta posterior em Docker produziu 60 medições MPI
+válidas e 15 referências sequenciais. Os dados estão em
+`resultados/01_coletas/complementares/perfil_mpi_2026-11-10/` e os resumos em
+`resultados/02_analises/complementares/`. A soma dos máximos por etapa permanece
+apenas um proxy descritivo, não uma decomposição exata do tempo total.

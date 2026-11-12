@@ -1,14 +1,14 @@
 # Autores e contribuições
 
-## Integrantes e divisão proposta
+## Integrantes e divisão confirmada
 
-| Integrante | Matrícula | Responsabilidade principal proposta pela equipe |
+| Integrante | Matrícula | Responsabilidade principal confirmada pela equipe |
 | --- | --- | --- |
 | Filipe de Campos Duarte | 2412130132 | implementação MPI e integração final |
 | Fabrício de Campos Duarte | 2412130139 | OpenMP, testes de corretude e análise experimental |
 | Davi Vinícius de Sousa Costa | 2412130133 | baseline, perfilamento, scripts de benchmark e documentação |
 
-**Confirmação humana pendente:** a tabela registra a divisão informada para o trabalho. O histórico sustenta atividades compatíveis, mas não comprova sozinho um acordo interno completo, aprovação formal dos três ou exclusividade. Os três integrantes devem confirmá-la antes da entrega.
+A divisão acima foi confirmada pelo grupo. O histórico Git sustenta atividades compatíveis, mas não é usado para inferir exclusividade ou medir esforço individual.
 
 ## Contribuições adicionais sustentadas pelo histórico
 

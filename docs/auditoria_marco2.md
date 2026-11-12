@@ -7,7 +7,7 @@ ambiente oficial e aos resultados das Issues #8 e #9.
 > **Nota retrospectiva (03/11/2026):** este documento preserva a fotografia da
 > auditoria de 21/10/2026. As pendências de execução e de dados comparáveis foram
 > resolvidas posteriormente pela coleta conjunta de 22/10/2026: 175 observações
-> sequenciais/OpenMP/MPI, 142 testes de corretude aprovados e 21 gráficos. As
+> sequenciais/OpenMP/MPI, 142 testes de corretude aprovados e 16 gráficos. As
 > evidências estão em `resultados/01_coletas/principal/issue10_desempenho.csv`, no arquivo de ambiente
 > correspondente e em [analise_desempenho.md](analise_desempenho.md). As frases
 > abaixo no presente histórico não descrevem o estado atual do repositório.

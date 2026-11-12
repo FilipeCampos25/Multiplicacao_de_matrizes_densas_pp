@@ -65,10 +65,10 @@ não zero; o baseline original não é alterado para incorporar essas proteçõe
 ## Coletar e analisar benchmarks
 
 ```bash
-./scripts/medir_speedup.sh 256 5 "1 2 4 8" "1 2 4 8" resultados/benchmark_256.csv
-./scripts/medir_speedup.sh 512 5 "1 2 4 8" "1 2 4 8" resultados/benchmark_512.csv
-./scripts/medir_speedup.sh 1024 5 "1 2 4 8" "1 2 4 8" resultados/benchmark_1024.csv
-python3 scripts/analisar_resultados.py resultados/benchmark_512.csv
+./scripts/medir_speedup.sh 256 5 "1 2 4 8" "1 2 4 8" resultados/01_coletas/complementares/benchmark_256.csv
+./scripts/medir_speedup.sh 512 5 "1 2 4 8" "1 2 4 8" resultados/01_coletas/complementares/benchmark_512.csv
+./scripts/medir_speedup.sh 1024 5 "1 2 4 8" "1 2 4 8" resultados/01_coletas/complementares/benchmark_1024.csv
+python3 scripts/analisar_resultados.py resultados/01_coletas/complementares/benchmark_512.csv resultados/02_analises/complementares/benchmark_512_resumo.csv
 ```
 
 Para as variantes OpenMP da mesma fonte:
@@ -78,7 +78,8 @@ make benchmark-openmp-build
 make benchmark-openmp \
   BENCHMARK_ARGS="--sizes 256 512 1024 --threads 1 2 4 8 \
   --schedules static dynamic guided \
-  --output resultados/openmp_nova_desempenho.csv"
+  --output resultados/01_coletas/complementares/openmp_nova/openmp_desempenho.csv \
+  --analysis-dir resultados/02_analises/complementares/openmp_nova"
 ```
 
 Escolha sempre um arquivo novo. O coletor recusa sobrescrever saídas existentes;
