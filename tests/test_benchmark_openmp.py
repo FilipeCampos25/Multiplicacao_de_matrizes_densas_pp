@@ -86,6 +86,15 @@ class BenchmarkTests(unittest.TestCase):
             self.assertEqual(error.exception.code, 2)
             self.assertEqual(output.read_text(), "dados anteriores\n")
 
+    def test_raw_and_derived_outputs_are_separated(self):
+        raw = Path("coletas") / "ensaio_desempenho.csv"
+        analysis = Path("analises") / "ensaio"
+        paths = benchmark.output_paths(raw, analysis)
+        self.assertEqual(paths["raw"], raw)
+        self.assertEqual(paths["environment"], raw.with_name("ensaio_ambiente.txt"))
+        self.assertEqual(paths["summary"], analysis / "ensaio_resumo.csv")
+        self.assertEqual(paths["status"], analysis / "ensaio_status.csv")
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
